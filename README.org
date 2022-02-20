@@ -35,6 +35,8 @@
   - [[#css][CSS]]
   - [[#javascript][Javascript]]
 - [[#appearance][Appearance]]
+  - [[#themes][Themes]]
+  - [[#custom][Custom]]
 
 * Reset Keymaps
 
@@ -1187,13 +1189,40 @@ find file in a git scoped project
   ;; Frame name = edited file name
   (setq frame-title-format '(buffer-file-name "%f"))
 
-  ;; * Themes
+#+end_src
+
+
+** Themes
+
+Theme synchronize with daylight. Theme is light during daytime and dark otherwise.
+
+#+begin_src emacs-lisp
 
   (install-package 'doom-themes)
-  (load-theme 'doom-one-light t)
 
-  ;; * Custom
+  (setq default-theme 'doom-one-light)
+  (load-theme default-theme t)
 
+  (defun synchronize-theme ()
+    (let* ((light-theme 'doom-one-light)
+           (dark-theme 'doom-one)
+           (start-time-light-theme 6) ;; from 6h
+           (end-time-light-theme 18)  ;; to   18h
+           (current-hour (string-to-number (substring (current-time-string) 11 13)))
+           (next-theme (if (member current-hour (number-sequence start-time-light-theme end-time-light-theme))
+                           light-theme dark-theme)))
+      (when (not (equal default-theme next-theme))
+        (setq default-theme next-theme)
+        (load-theme next-theme t))))
+
+  ;; run every 15min
+  (run-with-timer 0 900 'synchronize-theme)
+
+#+end_src
+
+** Custom
+
+#+begin_src emacs-lisp
   (custom-set-faces
    ;; custom-set-faces was added by Custom.
    ;; If you edit it by hand, you could mess it up, so be careful.
