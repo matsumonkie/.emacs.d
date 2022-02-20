@@ -1,4 +1,40 @@
 * Table of contents :toc:
+- [[#reset-keymaps][Reset Keymaps]]
+  - [[#control-key][Control key]]
+  - [[#meta][Meta]]
+- [[#general-alias][General Alias]]
+- [[#function][Function]]
+- [[#shortcut][Shortcut]]
+- [[#plugin][Plugin]]
+  - [[#ace-jump-mode][ace jump mode]]
+  - [[#bm---bookmark][bm - bookmark]]
+  - [[#csv][csv]]
+  - [[#centaur-tabs][centaur tabs]]
+  - [[#dash][dash]]
+  - [[#diff-hl][diff-hl]]
+  - [[#elm][elm]]
+  - [[#expand-region][expand region]]
+  - [[#flx-ido][flx-ido]]
+  - [[#github-markdown][github markdown]]
+  - [[#helm-ag][helm-ag]]
+  - [[#hlint][hlint]]
+  - [[#multiple-cursor][multiple cursor]]
+  - [[#magit][magit]]
+  - [[#org][org]]
+  - [[#projectile][projectile]]
+  - [[#perspective][perspective]]
+  - [[#tab-bar][tab-bar]]
+  - [[#yasnippet][yasnippet]]
+- [[#dev][Dev]]
+  - [[#nix][Nix]]
+  - [[#haskell][Haskell]]
+  - [[#git-link][git link]]
+  - [[#lsp---language-server-protocol][Lsp - language server protocol]]
+  - [[#ruby][Ruby]]
+  - [[#html][HTML]]
+  - [[#css][CSS]]
+  - [[#javascript][Javascript]]
+- [[#appearance][Appearance]]
 
 * Reset Keymaps
 
@@ -733,7 +769,59 @@
 
 #+end_src
 
-** Dash
+** ace jump mode
+
+jump to any word or initial
+
+#+begin_src emacs-lisp
+
+  (install-package 'ace-jump-mode)
+  (require 'ace-jump-mode)
+  (setq ace-jump-mode-case-fold nil) ;; don't ignore case
+  (global-set-key (kbd "C-j") 'ace-jump-mode)
+  (global-set-key (kbd "M-j") 'ace-jump-char-mode)
+
+#+end_src
+** bm - bookmark
+
+#+begin_src emacs-lisp
+
+  (install-package 'bm)
+
+  (global-set-key (kbd "M-m") 'bm-toggle)
+  (global-set-key (kbd "M-s") 'bm-next)
+  (global-set-key (kbd "M-r") 'bm-previous)
+  (setq bm-highlight-style 'bm-highlight-only-line) ;;default, the last one in the pic
+  (setq bm-marker 'bm-marker-right)
+
+#+end_src
+
+** csv
+
+#+begin_src emacs-lisp
+
+  (install-package 'csv-mode)
+
+#+end_src
+
+** centaur tabs
+
+#+begin_src emacs-lisp
+
+  (install-package 'centaur-tabs)
+  (require 'centaur-tabs)
+  (centaur-tabs-headline-match)
+  (centaur-tabs-mode t)
+  (global-set-key (kbd "M-t")  'centaur-tabs-backward)
+  (global-set-key (kbd "M-n") 'centaur-tabs-forward)
+  (setq centaur-tabs-set-modified-marker t
+        centaur-tabs-modified-marker "*"
+        centaur-tabs-set-close-button nil
+        centaur-tabs-cycle-scope 'tabs)
+
+#+end_src
+
+** dash
 
 A modern list api for Emacs
 
@@ -757,35 +845,26 @@ A modern list api for Emacs
 
 #+end_src
 
-** bm - bookmark
+** elm
 
 #+begin_src emacs-lisp
 
-  (install-package 'bm)
-
-  (global-set-key (kbd "M-m") 'bm-toggle)
-  (global-set-key (kbd "M-s") 'bm-next)
-  (global-set-key (kbd "M-r") 'bm-previous)
-  (setq bm-highlight-style 'bm-highlight-only-line) ;;default, the last one in the pic
-  (setq bm-marker 'bm-marker-right)
+  (install-package 'elm-mode)
 
 #+end_src
+** expand region
 
-** yasnippet
+incrementally expand region to word -> string -> paragraph -> ...
 
 #+begin_src emacs-lisp
 
-  (install-package 'yasnippet)
-  (install-package 'yasnippet-snippets)
-  (require 'yasnippet)
-  (yas-global-mode 1)
-  (define-key yas-minor-mode-map (kbd "<tab>") nil)
-  (define-key yas-minor-mode-map (kbd "M-q") #'yas-expand)
-  ;; to show available snippets in current mode: M-x yas-describe-tables
+  (install-package 'expand-region)
+  ;;(global-set-key (kbd "M-o") 'er/expand-region)
+  ;;(global-set-key (kbd "M-O") 'er/contract-region)
 
 #+end_src
 
-** Flx-ido
+** flx-ido
 
 #+begin_src emacs-lisp
 
@@ -801,70 +880,7 @@ A modern list api for Emacs
 
 #+end_src
 
-** Projectile
-
-find file in a git scoped project
-
-#+begin_src emacs-lisp
-
-  (install-package 'projectile)
-  (projectile-mode)
-  (global-set-key (kbd "C-SPC a") 'projectile-find-file)
-  (global-set-key (kbd "C-SPC p") 'projectile-switch-project)
-
-#+end_src
-
-** Ace jump mode
-
-jump to any word or initial
-
-#+begin_src emacs-lisp
-
-  (install-package 'ace-jump-mode)
-  (require 'ace-jump-mode)
-  (setq ace-jump-mode-case-fold nil) ;; don't ignore case
-  (global-set-key (kbd "C-j") 'ace-jump-mode)
-  (global-set-key (kbd "M-j") 'ace-jump-char-mode)
-
-#+end_src
-
-** Expand region
-
-incrementally expand region to word -> string -> paragraph -> ...
-
-#+begin_src emacs-lisp
-
-  (install-package 'expand-region)
-  ;;(global-set-key (kbd "M-o") 'er/expand-region)
-  ;;(global-set-key (kbd "M-O") 'er/contract-region)
-
-#+end_src
-
-** Multiple cursor
-
-#+begin_src emacs-lisp
-
-  (install-package 'multiple-cursors)
-
-  (global-set-key (kbd "M-S-<down>") 'mc/mark-next-like-this)
-  (global-set-key (kbd "M-S-<up>") 'mc/unmark-next-like-this)
-
-#+end_src
-
-** Magit
-
-#+begin_src emacs-lisp
-
-  (install-package 'magit)
-
-  ;; prevent instructions from being shown at startup
-  (setq magit-last-seen-setup-instructions "1.4.0")
-  ;; show magit on full screen when invoking it
-  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
-
-#+end_src
-
-** Github markdown
+** github markdown
 
 #+begin_src emacs-lisp
 
@@ -872,23 +888,6 @@ incrementally expand region to word -> string -> paragraph -> ...
   (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
 
 #+end_src
-
-** Elm
-
-#+begin_src emacs-lisp
-
-  (install-package 'elm-mode)
-
-#+end_src
-
-** Csv
-
-#+begin_src emacs-lisp
-
-  (install-package 'csv-mode)
-
-#+end_src
-
 ** helm-ag
 
 #+begin_src emacs-lisp
@@ -909,7 +908,53 @@ incrementally expand region to word -> string -> paragraph -> ...
 
 #+end_src
 
-** Perspective
+** multiple cursor
+
+#+begin_src emacs-lisp
+
+  (install-package 'multiple-cursors)
+
+  (global-set-key (kbd "M-S-<down>") 'mc/mark-next-like-this)
+  (global-set-key (kbd "M-S-<up>") 'mc/unmark-next-like-this)
+
+#+end_src
+
+** magit
+
+#+begin_src emacs-lisp
+
+  (install-package 'magit)
+
+  ;; prevent instructions from being shown at startup
+  (setq magit-last-seen-setup-instructions "1.4.0")
+  ;; show magit on full screen when invoking it
+  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+
+#+end_src
+
+** org
+
+#+begin_src emacs-lisp
+
+  (install-package 'toc-org)
+  (add-hook 'org-mode-hook 'toc-org-mode)
+
+#+end_src
+
+** projectile
+
+find file in a git scoped project
+
+#+begin_src emacs-lisp
+
+  (install-package 'projectile)
+  (projectile-mode)
+  (global-set-key (kbd "C-SPC a") 'projectile-find-file)
+  (global-set-key (kbd "C-SPC p") 'projectile-switch-project)
+
+#+end_src
+
+** perspective
 
 #+begin_src emacs-lisp
 
@@ -930,20 +975,17 @@ incrementally expand region to word -> string -> paragraph -> ...
 
 #+end_src
 
-** Centaur tabs
+** yasnippet
 
 #+begin_src emacs-lisp
 
-  (install-package 'centaur-tabs)
-  (require 'centaur-tabs)
-  (centaur-tabs-headline-match)
-  (centaur-tabs-mode t)
-  (global-set-key (kbd "M-t")  'centaur-tabs-backward)
-  (global-set-key (kbd "M-n") 'centaur-tabs-forward)
-  (setq centaur-tabs-set-modified-marker t
-        centaur-tabs-modified-marker "*"
-        centaur-tabs-set-close-button nil
-        centaur-tabs-cycle-scope 'tabs)
+  (install-package 'yasnippet)
+  (install-package 'yasnippet-snippets)
+  (require 'yasnippet)
+  (yas-global-mode 1)
+  (define-key yas-minor-mode-map (kbd "<tab>") nil)
+  (define-key yas-minor-mode-map (kbd "M-q") #'yas-expand)
+  ;; to show available snippets in current mode: M-x yas-describe-tables
 
 #+end_src
 
