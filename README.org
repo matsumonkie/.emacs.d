@@ -1,7 +1,6 @@
-;; * Reset Keymaps
+* Reset Keymaps
 
-
-;; ** Control key
+** Control key
 
 #+begin_src emacs-lisp
 
@@ -17,7 +16,7 @@
 
 #+end_src
 
-;; ** Meta
+** Meta
 
 #+begin_src emacs-lisp
   (dolist (key '(
@@ -32,7 +31,7 @@
 
 #+end_src
 
-;; * General Alias
+* General Alias
 
 #+begin_src emacs-lisp
 
@@ -139,7 +138,7 @@
 
 #+end_src
 
-;; * Function
+* Function
 
 #+begin_src emacs-lisp
 
@@ -378,7 +377,7 @@
 
 #+end_src
 
-;; * Shortcut
+* Shortcut
 
 #+begin_src emacs-lisp
 
@@ -714,8 +713,12 @@
   (setq tramp-default-method "ssh")
 
   ;; connect as root to a remote ssh server: C-f /ssh:prod|sudo:root@prod:/
+#+end_src
 
-  ;; * Plugin
+* Plugin
+
+
+#+begin_src emacs-lisp
 
   (message "\n -- setting plugin --\n")
 
@@ -726,18 +729,22 @@
     (unless (package-installed-p name)
       (package-refresh-contents) (package-install name)))
 
-  ;; * use package
+#+end_src
 
-  (install-package 'use-package)
+** Dash
 
-  ;; ** Dash
+A modern list api for Emacs
 
-  ;; A modern list api for Emacs
+#+begin_src emacs-lisp
 
   (install-package 'dash)
   (require 'dash)
 
-  ;; ** diff-hl
+#+end_src
+
+** diff-hl
+
+#+begin_src emacs-lisp
 
   (install-package 'diff-hl)
   (global-diff-hl-mode)
@@ -746,7 +753,11 @@
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
 
-  ;; ** bm - bookmark
+#+end_src
+
+** bm - bookmark
+
+#+begin_src emacs-lisp
 
   (install-package 'bm)
 
@@ -756,7 +767,11 @@
   (setq bm-highlight-style 'bm-highlight-only-line) ;;default, the last one in the pic
   (setq bm-marker 'bm-marker-right)
 
-  ;; ** yasnippet
+#+end_src
+
+** yasnippet
+
+#+begin_src emacs-lisp
 
   (install-package 'yasnippet)
   (install-package 'yasnippet-snippets)
@@ -766,8 +781,11 @@
   (define-key yas-minor-mode-map (kbd "M-q") #'yas-expand)
   ;; to show available snippets in current mode: M-x yas-describe-tables
 
+#+end_src
 
-  ;; ** Flx-ido
+** Flx-ido
+
+#+begin_src emacs-lisp
 
   ;; auto completion a la Sublime when searching for files
 
@@ -779,18 +797,26 @@
   (ido-everywhere 1)
   (flx-ido-mode 1)
 
-  ;; ** Projectile
+#+end_src
 
-  ;; find file in a git scoped project
+** Projectile
+
+find file in a git scoped project
+
+#+begin_src emacs-lisp
 
   (install-package 'projectile)
   (projectile-mode)
   (global-set-key (kbd "C-SPC a") 'projectile-find-file)
   (global-set-key (kbd "C-SPC p") 'projectile-switch-project)
 
-  ;; ** Ace jump mode
+#+end_src
 
-  ;; jump to any word or initial
+** Ace jump mode
+
+jump to any word or initial
+
+#+begin_src emacs-lisp
 
   (install-package 'ace-jump-mode)
   (require 'ace-jump-mode)
@@ -798,23 +824,34 @@
   (global-set-key (kbd "C-j") 'ace-jump-mode)
   (global-set-key (kbd "M-j") 'ace-jump-char-mode)
 
-  ;; ** Expand region
+#+end_src
 
-  ;; incrementally expand region to word -> string -> paragraph -> ...
+** Expand region
+
+incrementally expand region to word -> string -> paragraph -> ...
+
+#+begin_src emacs-lisp
 
   (install-package 'expand-region)
   ;;(global-set-key (kbd "M-o") 'er/expand-region)
   ;;(global-set-key (kbd "M-O") 'er/contract-region)
 
+#+end_src
 
-  ;; ** Multiple cursor
+** Multiple cursor
+
+#+begin_src emacs-lisp
 
   (install-package 'multiple-cursors)
 
   (global-set-key (kbd "M-S-<down>") 'mc/mark-next-like-this)
   (global-set-key (kbd "M-S-<up>") 'mc/unmark-next-like-this)
 
-  ;; ** Magit
+#+end_src
+
+** Magit
+
+#+begin_src emacs-lisp
 
   (install-package 'magit)
 
@@ -823,24 +860,44 @@
   ;; show magit on full screen when invoking it
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
 
-  ;; ** Github markdown
+#+end_src
+
+** Github markdown
+
+#+begin_src emacs-lisp
 
   (install-package 'markdown-mode)
   (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
 
-  ;; ** Elm
+#+end_src
+
+** Elm
+
+#+begin_src emacs-lisp
 
   (install-package 'elm-mode)
 
-  ;; ** Csv
+#+end_src
+
+** Csv
+
+#+begin_src emacs-lisp
 
   (install-package 'csv-mode)
 
-  ;; ** helm-ag
+#+end_src
+
+** helm-ag
+
+#+begin_src emacs-lisp
 
   (install-package 'helm-ag)
 
-  ;; ** hlint
+#+end_src
+
+** hlint
+
+#+begin_src emacs-lisp
 
   ;;(load "~/.emacs.d/hs-lint")
 
@@ -848,120 +905,32 @@
   ;;    (local-set-key "\C-cl" 'hs-lint))
   ;;(add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
 
-  ;; ** Outline
+#+end_src
 
-  (setq outline-minor-mode-prefix "\M-#")
+** Perspective
 
-  ;;(install-package 'outshine)
-  ;;(require 'outshine)
-
-  ;;(setq outshine-use-speed-commands t)
-
-  ;;(add-hook 'outline-minor-mode-hook 'outshine-mode)
-  ;;(add-hook 'prog-mode-hook 'outline-minor-mode)
-  ;;(add-hook 'haskell-mode-hook 'outline-minor-mode)
-  ;;(add-hook 'ruby-mode-hook 'outline-minor-mode)
-  ;;(add-hook 'sql-mode-hook 'outline-minor-mode)
-  ;;(add-hook 'nix-mode-hook 'outline-minor-mode)
-
-  (set-display-table-slot standard-display-table
-                          'selective-display
-                          (string-to-vector "[…]"))
-
-  (defun -add-font-lock-kwds (FONT-LOCK-ALIST)
-    (font-lock-add-keywords
-     nil (--map (-let (((rgx uni-point) it))
-                  `(,rgx (0 (progn
-                              (compose-region (match-beginning 1) (match-end 1)
-                                              ,(concat "\t" (list uni-point)))
-                              nil))))
-                FONT-LOCK-ALIST)))
-
-  (defmacro add-font-locks (FONT-LOCK-HOOKS-ALIST)
-    `(--each ,FONT-LOCK-HOOKS-ALIST
-       (-let (((font-locks . mode-hooks) it))
-         (--each mode-hooks
-           (add-hook it (-partial '-add-font-lock-kwds
-                                  (symbol-value font-locks)))))))
-
-  (defconst lisp-outlines-font-lock-alist
-    ;; Outlines
-    '(("\\(^;; \\*\\) "          ?■)
-      ("\\(^;; \\*\\*\\) "       ?✸)
-      ("\\(^;; \\*\\*\\*\\) "    ?✿)
-      ("\\(^;; \\*\\*\\*\\*\\) " ?○)))
-
-  (defconst haskell-outlines-font-lock-alist
-    ;; Outlines
-    '(("\\(^-- \\*\\) "          ?■)
-      ("\\(^-- \\*\\*\\) "       ?✸)
-      ("\\(^-- \\*\\*\\*\\) "    ?✿)
-      ("\\(^-- \\*\\*\\*\\*\\) " ?○)))
-
-  (defconst elm-outlines-font-lock-alist
-    ;; Outlines
-    '(("\\(^-- \\*\\) "          ?■)
-      ("\\(^-- \\*\\*\\) "       ?✸)
-      ("\\(^-- \\*\\*\\*\\) "    ?✿)
-      ("\\(^-- \\*\\*\\*\\*\\) " ?○)))
-
-  (defconst ruby-outlines-font-lock-alist
-    ;; Outlines
-    '(("\\(^# \\*\\) "          ?■)
-      ("\\(^# \\*\\*\\) "       ?✸)
-      ("\\(^# \\*\\*\\*\\) "    ?✿)
-      ("\\(^# \\*\\*\\*\\*\\) " ?○)))
-
-  (defconst shell-outlines-font-lock-alist
-    ;; Outlines
-    '(("\\(^# \\*\\) "          ?■)
-      ("\\(^# \\*\\*\\) "       ?✸)
-      ("\\(^# \\*\\*\\*\\) "    ?✿)
-      ("\\(^# \\*\\*\\*\\*\\) " ?○)))
-
-  (defconst nix-outlines-font-lock-alist
-    ;; Outlines
-    '(("\\(^# \\*\\) "          ?■)
-      ("\\(^# \\*\\*\\) "       ?✸)
-      ("\\(^# \\*\\*\\*\\) "    ?✿)
-      ("\\(^# \\*\\*\\*\\*\\) " ?○)))
-
-  (defconst sql-outlines-font-lock-alist
-    ;; Outlines
-    '(("\\(^-- \\*\\) "          ?■)
-      ("\\(^-- \\*\\*\\) "       ?✸)
-      ("\\(^-- \\*\\*\\*\\) "    ?✿)
-      ("\\(^-- \\*\\*\\*\\*\\) " ?○)))
-
-  (add-font-locks
-   '((haskell-outlines-font-lock-alist haskell-mode-hook)
-     (elm-outlines-font-lock-alist elm-mode-hook)
-     (lisp-outlines-font-lock-alist emacs-lisp-mode-hook)
-     (shell-outlines-font-lock-alist shell-script-mode-hook)
-     (sql-outlines-font-lock-alist sql-mode-hook)
-     (ruby-outlines-font-lock-alist ruby-mode-hook)
-     (nix-outlines-font-lock-alist nix-mode-hook)))
-
-  ;;(defun my/haskell-mode-outline-hook ()
-  ;; Set the Haskell mode outline header syntax to be "-- *"
-  ;;  (setq outshine-preserve-delimiter-whitespace t))
-
-  ;;(add-hook 'haskell-mode-hook 'my/haskell-mode-outline-hook)
-
-  ;; ** Perspective
+#+begin_src emacs-lisp
 
   ;;(install-package 'perspective)
   ;;(require 'perspective)
   ;;(persp-mode)
 
-  ;; ** tab-bar
+#+end_src
+
+** tab-bar
+
+#+begin_src emacs-lisp
 
   (tab-bar-mode)
 
   (global-set-key (kbd "M-T") 'tab-previous)
   (global-set-key (kbd "M-N") 'tab-next)
 
-  ;; ** Centaur tabs
+#+end_src
+
+** Centaur tabs
+
+#+begin_src emacs-lisp
 
   (install-package 'centaur-tabs)
   (require 'centaur-tabs)
@@ -974,19 +943,22 @@
         centaur-tabs-set-close-button nil
         centaur-tabs-cycle-scope 'tabs)
 
-  ;; * Dev
+#+end_src
 
-  (message "\n -- setting dev --\n")
+* Dev
+
+** Nix
 
 
-  ;; ** nixos
-
+#+begin_src emacs-lisp
 
   (install-package 'nix-mode)
 
+#+end_src
 
-  ;; ** Haskell
+** Haskell
 
+#+begin_src emacs-lisp
   (install-package 'haskell-mode)
   (require 'haskell-mode)
   (require 'haskell-interactive-mode)
@@ -1017,24 +989,22 @@
                                           ; '(haskell-stylish-on-save t)
                                           ; '(package-selected-packages
                                           ;   '(lsp-mode hs-lint nix-mode haskell-mode outshine helm-ag csv-mode elm-mode markdown-mode magit multiple-cursors expand-region ace-jump-mode projectile flx-ido grip-mode try dash)))
+#+end_src
 
+** git link
 
-  ;; ** git link
+#+begin_src emacs-lisp
 
   (install-package 'git-link)
 
   (defalias 'gl 'git-link)
   (defalias 'glc 'git-link-commit)
 
+#+end_src
 
-  ;; ** Ripgrep
+** Lsp - language server protocol
 
-  (install-package 'rg)
-  (require 'rg)
-
-  ;; ** Lsp - language server protocol
-
-  ;; A modern list api for Emacs
+#+begin_src emacs-lisp
 
   (install-package 'lsp-mode)
   (install-package 'lsp-haskell)
@@ -1094,7 +1064,11 @@
       (haskell-interactive-switch-back)
       ))
 
-  ;; ** Ruby
+#+end_src
+
+** Ruby
+
+#+begin_src emacs-lisp
 
   ;; Enhanced Ruby Mode
 
@@ -1110,22 +1084,38 @@
   ;; do not add header => -*- coding: utf-8 -*-
   (setq ruby-insert-encoding-magic-comment nil)
 
-  ;; ** HTML
+#+end_src
+
+** HTML
+
+#+begin_src emacs-lisp
 
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-css-indent-offset 2)
   (setq web-mode-code-indent-offset 2)
 
-  ;; ** CSS
+#+end_src
+
+** CSS
+
+#+begin_src emacs-lisp
 
   (setq css-indent-offset 2)
   (setq scss-indent-offset 2)
 
-  ;; ** Javascript
+#+end_src
+
+** Javascript
+
+#+begin_src emacs-lisp
 
   (setq js-indent-level 2)
 
-  ;; * Appearance
+#+end_src
+
+* Appearance
+
+#+begin_src emacs-lisp
 
   (message "\n -- setting appeareance --\n")
 
@@ -1184,7 +1174,7 @@
    '(centaur-tabs-show-new-tab-button nil)
    '(lsp-enable-file-watchers nil)
    '(package-selected-packages
-     '(perspective yasnippet-snippets yasnippet rip-grep git-link use-package lsp-ui doom-themes centaur-tabs lsp-haskell lsp-mode haskell-mode nix-mode helm-ag csv-mode elm-mode markdown-mode magit multiple-cursors expand-region ace-jump-mode projectile flx-ido tabbar dash))
+     '(perspective yasnippet-snippets yasnippet rip-grep git-link lsp-ui doom-themes centaur-tabs lsp-haskell lsp-mode haskell-mode nix-mode helm-ag csv-mode elm-mode markdown-mode magit multiple-cursors expand-region ace-jump-mode projectile flx-ido tabbar dash))
    '(tab-bar-close-button-show nil)
    '(tab-bar-close-tab-select 'left)
    '(tab-bar-new-button-show nil)
