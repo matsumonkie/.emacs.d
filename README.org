@@ -5,7 +5,7 @@
 - [[#general-alias][General Alias]]
 - [[#function][Function]]
 - [[#shortcut][Shortcut]]
-- [[#plugin][Plugin]]
+- [[#mode][Mode]]
   - [[#ace-jump-mode][ace jump mode]]
   - [[#bm---bookmark][bm - bookmark]]
   - [[#csv][csv]]
@@ -24,6 +24,7 @@
   - [[#projectile][projectile]]
   - [[#perspective][perspective]]
   - [[#tab-bar][tab-bar]]
+  - [[#savehist-mode][savehist-mode]]
   - [[#yasnippet][yasnippet]]
 - [[#dev][Dev]]
   - [[#nix][Nix]]
@@ -755,7 +756,7 @@
   ;; connect as root to a remote ssh server: C-f /ssh:prod|sudo:root@prod:/
 #+end_src
 
-* Plugin
+* Mode
 
 
 #+begin_src emacs-lisp
@@ -974,6 +975,16 @@ find file in a git scoped project
 
   (global-set-key (kbd "M-T") 'tab-previous)
   (global-set-key (kbd "M-N") 'tab-next)
+
+#+end_src
+
+** savehist-mode
+
+In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elements) to show previously saved commands
+
+#+begin_src emacs-lisp
+
+  (savehist-mode 1)
 
 #+end_src
 
@@ -1206,8 +1217,8 @@ Theme synchronize with daylight. Theme is light during daytime and dark otherwis
   (defun synchronize-theme ()
     (let* ((light-theme 'doom-one-light)
            (dark-theme 'doom-one)
-           (start-time-light-theme 6) ;; from 6h
-           (end-time-light-theme 18)  ;; to   18h
+           (start-time-light-theme 10) ;; from 10h
+           (end-time-light-theme 18)   ;; to   18h
            (current-hour (string-to-number (substring (current-time-string) 11 13)))
            (next-theme (if (member current-hour (number-sequence start-time-light-theme end-time-light-theme))
                            light-theme dark-theme)))
