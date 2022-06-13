@@ -5,6 +5,8 @@
 - [[#general-alias][General Alias]]
 - [[#function][Function]]
 - [[#shortcut][Shortcut]]
+- [[#system][System]]
+  - [[#rest][rest]]
 - [[#mode][Mode]]
   - [[#ace-jump-mode][ace jump mode]]
   - [[#bm---bookmark][bm - bookmark]]
@@ -38,6 +40,7 @@
 - [[#appearance][Appearance]]
   - [[#themes][Themes]]
   - [[#custom][Custom]]
+  - [[#desktop-save-mode][Desktop save mode]]
 
 * Reset Keymaps
 
@@ -611,7 +614,11 @@
 
   (global-set-key (kbd "C-SPC m")  'rename-this-buffer-and-file)
 
-  ;; * System
+#+end_src
+
+* System
+
+#+begin_src emacs-lisp
 
   (message "\n -- setting system --\n")
 
@@ -620,15 +627,16 @@
   ;; Enlarge the value only if the subprocess generates very large (megabytes) amounts of data in one go.
   (setq read-process-output-max (* 1024 1024)) ;; 1 mb (default value is 4096)
 
-
-
   ;; Fast boot
   (modify-frame-parameters nil '((wait-for-wm . nil)))
   (setq inhibit-startup-message t)
   (fset 'yes-or-no-p 'y-or-n-p)
 
-  ;; Always show line number
-  (global-display-line-numbers-mode)
+#+end_src
+
+** rest
+
+#+begin_src emacs-lisp
 
   ;; Save cursor position when exiting a file
   (save-place-mode)
@@ -668,6 +676,9 @@
   (set-language-environment   'utf-8)
   (prefer-coding-system       'utf-8)
 
+  ;; refresh buffers content and dired listing when files get edited/deleted/added outside of emacs
+  (global-auto-revert-mode 1)
+  (setq global-auto-revert-non-file-buffers t)
 
   ;; Scroll behaviour
   (setq redisplay-dont-pause t
@@ -754,6 +765,7 @@
   (setq tramp-default-method "ssh")
 
   ;; connect as root to a remote ssh server: C-f /ssh:prod|sudo:root@prod:/
+
 #+end_src
 
 * Mode
@@ -1098,8 +1110,8 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
        (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
        ))
 
-  (define-key haskell-mode-map (kbd "M-s") 'haskell-interactive-mode-history-previous)
-  (define-key haskell-mode-map (kbd "M-r") 'haskell-interactive-mode-history-next)
+;;  (define-key haskell-mode-map (kbd "M-s") 'haskell-interactive-mode-history-previous)
+;;  (define-key haskell-mode-map (kbd "M-r") 'haskell-interactive-mode-history-next)
   (define-key haskell-cabal-mode-map (kbd "M-n") 'centaur-tabs-forward)
 
   (defun my-haskell-process-load-file ()
@@ -1190,6 +1202,7 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
   (setq display-time-24hr-format t)
 
   ;; Line and column number enabled / highlight current line
+  (global-display-line-numbers-mode)
   (column-number-mode t)
   (line-number-mode t)
   (global-hl-line-mode 1)
@@ -1217,8 +1230,8 @@ Theme synchronize with daylight. Theme is light during daytime and dark otherwis
   (defun synchronize-theme ()
     (let* ((light-theme 'doom-one-light)
            (dark-theme 'doom-one)
-           (start-time-light-theme 10) ;; from 10h
-           (end-time-light-theme 18)   ;; to   18h
+           (start-time-light-theme 8) ;; from 8h
+           (end-time-light-theme 19)   ;; to   19h
            (current-hour (string-to-number (substring (current-time-string) 11 13)))
            (next-theme (if (member current-hour (number-sequence start-time-light-theme end-time-light-theme))
                            light-theme dark-theme)))
@@ -1245,6 +1258,8 @@ Theme synchronize with daylight. Theme is light during daytime and dark otherwis
    '(centaur-tabs-selected-modified ((t (:background "sky blue" :foreground "black"))))
    '(centaur-tabs-unselected ((t (:background "#f0f0f0" :foreground "black"))))
    '(centaur-tabs-unselected-modified ((t (:background "#f0f0f0" :foreground "black"))))
+   ;; '(warning-suppress-log-types '(((flymake flymake-proc)) (comp)))
+   ;; '(warning-suppress-types '(((flymake flymake-proc)) (comp)))
    '(tab-bar ((t (:background "#f0f0f0" :foreground "black" :box nil))))
    '(tab-bar-tab ((t (:background "sky blue" :foreground "black" :box nil))))
    '(tab-bar-tab-group-current ((t (:inherit tab-bar-tab :weight bold))))
@@ -1264,5 +1279,18 @@ Theme synchronize with daylight. Theme is light during daytime and dark otherwis
    '(tab-bar-new-button-show nil)
    '(tab-bar-new-tab-to 'rightmost)
    '(warning-suppress-types '((comp))))
+
+#+end_src
+
+** Desktop save mode
+
+Save your current session when you exit emacs and load it back when you start emacs.
+
+#+begin_src emacs-lisp
+
+  (desktop-save-mode)
+  ;; save the session in the directory where emacs was invoked
+  (setq desktop-path '("."))
+  (desktop-read ".")
 
 #+end_src
