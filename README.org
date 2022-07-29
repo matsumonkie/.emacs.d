@@ -18,7 +18,7 @@
   - [[#expand-region][expand region]]
   - [[#flx-ido][flx-ido]]
   - [[#github-markdown][github markdown]]
-  - [[#helm-ag][helm-ag]]
+  - [[#rg][rg]]
   - [[#hlint][hlint]]
   - [[#multiple-cursor][multiple cursor]]
   - [[#magit][magit]]
@@ -157,7 +157,7 @@
   (defalias 'cma 'mc/mark-all-like-this)
 
   ;; helm-ag
-  (defalias 'ag 'helm-ag-project-root)
+  (defalias 'ag 'rg-project)
 
   ;; Magit
   (defalias 'mm 'magit-mode)
@@ -764,6 +764,9 @@
   ;; Tramp default to ssh
   (setq tramp-default-method "ssh")
 
+  ;; hide flymake logs on init
+  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
+
   ;; connect as root to a remote ssh server: C-f /ssh:prod|sudo:root@prod:/
 
 #+end_src
@@ -903,11 +906,14 @@ incrementally expand region to word -> string -> paragraph -> ...
   (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
 
 #+end_src
-** helm-ag
+
+** rg
+
+ripgrep for emacs
 
 #+begin_src emacs-lisp
 
-  (install-package 'helm-ag)
+  (install-package 'rg)
 
 #+end_src
 
@@ -1292,5 +1298,8 @@ Save your current session when you exit emacs and load it back when you start em
   ;; save the session in the directory where emacs was invoked
   (setq desktop-path '("."))
   (desktop-read ".")
+  ;; if another emacs session is opened, don't show a warning
+  (setq desktop-load-locked-desktop t)
+
 
 #+end_src
