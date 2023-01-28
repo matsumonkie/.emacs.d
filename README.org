@@ -16,15 +16,15 @@
   - [[#diff-hl][diff-hl]]
   - [[#elm][elm]]
   - [[#expand-region][expand region]]
-  - [[#flx-ido][flx-ido]]
   - [[#github-markdown][github markdown]]
+  - [[#crdt][crdt]]
   - [[#rg][rg]]
   - [[#hlint][hlint]]
   - [[#multiple-cursor][multiple cursor]]
   - [[#magit][magit]]
   - [[#org][org]]
   - [[#projectile][projectile]]
-  - [[#perspective][perspective]]
+  - [[#vertico][Vertico]]
   - [[#tab-bar][tab-bar]]
   - [[#savehist-mode][savehist-mode]]
   - [[#yasnippet][yasnippet]]
@@ -800,6 +800,7 @@ jump to any word or initial
   (global-set-key (kbd "M-j") 'ace-jump-char-mode)
 
 #+end_src
+
 ** bm - bookmark
 
 #+begin_src emacs-lisp
@@ -852,6 +853,8 @@ A modern list api for Emacs
 
 ** diff-hl
 
+highlight git diff in emacs' gutter
+
 #+begin_src emacs-lisp
 
   (install-package 'diff-hl)
@@ -870,6 +873,7 @@ A modern list api for Emacs
   (install-package 'elm-mode)
 
 #+end_src
+
 ** expand region
 
 incrementally expand region to word -> string -> paragraph -> ...
@@ -882,28 +886,22 @@ incrementally expand region to word -> string -> paragraph -> ...
 
 #+end_src
 
-** flx-ido
-
-#+begin_src emacs-lisp
-
-  ;; auto completion a la Sublime when searching for files
-
-  (install-package 'flx-ido)
-  (require 'flx-ido)
-  (setq ido-enable-flex-matching t
-        ido-use-faces nil) ; disable color
-  (ido-mode 1)
-  (ido-everywhere 1)
-  (flx-ido-mode 1)
-
-#+end_src
-
 ** github markdown
 
 #+begin_src emacs-lisp
 
   (install-package 'markdown-mode)
   (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
+
+#+end_src
+
+** crdt
+
+Collaborative emacs session editing
+
+#+begin_src emacs-lisp
+
+  (install-package 'crdt)
 
 #+end_src
 
@@ -950,6 +948,8 @@ ripgrep for emacs
   (setq magit-last-seen-setup-instructions "1.4.0")
   ;; show magit on full screen when invoking it
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+  (setq magit-save-repository-buffers nil)
+
 
 #+end_src
 
@@ -975,15 +975,21 @@ find file in a git scoped project
 
 #+end_src
 
-** perspective
+** Vertico
+
+Vertical completion UI
 
 #+begin_src emacs-lisp
 
-  ;;(install-package 'perspective)
-  ;;(require 'perspective)
-  ;;(persp-mode)
+  (install-package 'vertico)
+  (vertico-mode)
+  (setq completion-styles '(substring flex))
+  (setq vertico-cycle t)
+  (define-key vertico-map (kbd "<down>") 'vertico-next)
+  (define-key vertico-map (kbd "<up>") 'vertico-previous)
 
 #+end_src
+
 
 ** tab-bar
 
@@ -1103,9 +1109,7 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
         )
 
 
-  ;;(setq lsp-keymap-prefix (kbd "C-c C-l"))
-
-    ;;; Shortcuts
+  ;;; Shortcuts
 
   (eval-after-load "haskell-mode"
     '(progn
@@ -1236,8 +1240,8 @@ Theme synchronize with daylight. Theme is light during daytime and dark otherwis
   (defun synchronize-theme ()
     (let* ((light-theme 'doom-one-light)
            (dark-theme 'doom-one)
-           (start-time-light-theme 8) ;; from 8h
-           (end-time-light-theme 19)   ;; to   19h
+           (start-time-light-theme 8)  ;; from 12h
+           (end-time-light-theme 23)   ;; to    14h
            (current-hour (string-to-number (substring (current-time-string) 11 13)))
            (next-theme (if (member current-hour (number-sequence start-time-light-theme end-time-light-theme))
                            light-theme dark-theme)))
@@ -1279,7 +1283,7 @@ Theme synchronize with daylight. Theme is light during daytime and dark otherwis
    '(centaur-tabs-show-new-tab-button nil)
    '(lsp-enable-file-watchers nil)
    '(package-selected-packages
-     '(perspective yasnippet-snippets yasnippet rip-grep git-link lsp-ui doom-themes centaur-tabs lsp-haskell lsp-mode haskell-mode nix-mode helm-ag csv-mode elm-mode markdown-mode magit multiple-cursors expand-region ace-jump-mode projectile flx-ido tabbar dash))
+     '(perspective yasnippet-snippets yasnippet rip-grep git-link lsp-ui doom-themes centaur-tabs lsp-haskell lsp-mode haskell-mode nix-mode helm-ag csv-mode elm-mode markdown-mode magit multiple-cursors expand-region ace-jump-mode projectile tabbar dash))
    '(tab-bar-close-button-show nil)
    '(tab-bar-close-tab-select 'left)
    '(tab-bar-new-button-show nil)
