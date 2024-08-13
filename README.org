@@ -8,9 +8,10 @@
 - [[#system][System]]
   - [[#rest][rest]]
 - [[#mode][Mode]]
+  - [[#org-mode][Org mode]]
+  - [[#dired-mode][dired mode]]
   - [[#ace-jump-mode][ace jump mode]]
   - [[#bm---bookmark][bm - bookmark]]
-  - [[#csv][csv]]
   - [[#centaur-tabs][centaur tabs]]
   - [[#dash][dash]]
   - [[#diff-hl][diff-hl]]
@@ -27,6 +28,7 @@
   - [[#vertico][Vertico]]
   - [[#tab-bar][tab-bar]]
   - [[#savehist-mode][savehist-mode]]
+  - [[#wrgep-writtable-grep-allows-to-grep-and-modify-the-result-of-grep-directly][wrgep (writtable grep: allows to grep and modify the result of grep directly)]]
   - [[#yasnippet][yasnippet]]
 - [[#dev][Dev]]
   - [[#nix][Nix]]
@@ -773,6 +775,39 @@
 
 * Mode
 
+** Org mode
+
+*** create table
+
+To create a table, you just need to use pipes, e.g:
+
+| whatever |
+|----------+
+
+** dired mode
+
+| Key   | Function                     | Action                       |
+|-------+------------------------------+------------------------------|
+| C     | dired-do-copy                | Copy a file                  |
+| j     | dired-goto-file              | Jump to a file               |
+| g     | revert-buffer                | Refresh the dired buffer     |
+| m     | dired-mark                   | Mark file under cursor       |
+| % m   | dired-mark-files=regexp      | Mark by regular expression   |
+| o     | dired-find-file-other-window | Open file in other window    |
+| q     | quit-window                  | Close the buffer             |
+| R     | dired-do-rename              | Rename (move) a file         |
+| t     | dired-toggle-marks           | Inverse marked files         |
+| u     | dired-unmark                 | Unmark file under cursor     |
+| U     | dired-unmark-all-marks       | Unmark all files             |
+| &     | dired-do-async-shell-command | Open file with other program |
+| enter | dired-find-file              | Open file                    |
+
+*** wdired mode
+
+Wdired is a special mode that allows you to perform file operations by editing the Dired buffer directly (the “W” in “Wdired” stands for “writable”). To enter Wdired mode, type **C-x C-q** (dired-toggle-read-only) while in a Dired buffer.
+
+Once you are done editing, type **C-c C-c** (wdired-finish-edit) to apply your changes or **C-c C-k** to abort the changes.
+
 
 #+begin_src emacs-lisp
 
@@ -812,14 +847,6 @@ jump to any word or initial
   (global-set-key (kbd "M-r") 'bm-previous)
   (setq bm-highlight-style 'bm-highlight-only-line) ;;default, the last one in the pic
   (setq bm-marker 'bm-marker-right)
-
-#+end_src
-
-** csv
-
-#+begin_src emacs-lisp
-
-  (install-package 'csv-mode)
 
 #+end_src
 
@@ -1011,6 +1038,16 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
   (savehist-mode 1)
 
 #+end_src
+
+** wrgep (writtable grep: allows to grep and modify the result of grep directly)
+
+#+begin_src emacs-lisp
+
+  (install-package 'wgrep)
+  (require 'wgrep)
+
+#+end_src
+
 
 ** yasnippet
 
