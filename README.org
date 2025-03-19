@@ -429,75 +429,82 @@
 
   (message "\n -- setting shortcuts --\n")
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; BASIC COMMAND
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (global-set-key (kbd "C-SPC")   'Control-X-prefix)
   (global-set-key (kbd "C-e")     'set-mark-command)
   (global-set-key (kbd "M-SPC")   'execute-extended-command)
   (global-set-key (kbd "C-SPC u") 'universal-argument)
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; OPEN FILE
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; FILE
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (global-set-key [f1] 'find-file)
   (global-set-key (kbd "C-SPC f") 'find-file)
+  (global-set-key (kbd "C-SPC m")  'rename-this-buffer-and-file)
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; SAVE
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (global-set-key [f2] 'save-buffer)
   (global-set-key [f3] 'write-file)
   (global-set-key (kbd "C-w") 'save-buffer)
   (global-set-key (kbd "C-SPC w") 'write-file)
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; KILL
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (global-set-key [f4] 'kill-emacs)
   (global-set-key (kbd "C-k") 'my-kill-buffer)
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; BUFFER MENU
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (global-set-key [f7] 'buffer-menu)
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; GOTO
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (global-set-key "\M-g" 'goto-line)
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; GOTO
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (global-set-key "\M-g" 'goto-line)
+  ;;(global-set-key "C-." 'xref-find-definitions)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; WINDOWS
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (global-set-key "\M-b" 'next-buffer)
   (global-set-key "\M-b" 'next-buffer)
   (global-set-key (kbd "C-SPC O") 'previous-multiframe-window)
   (global-set-key [f12] 'repeat-complex-command)
   (global-set-key (kbd "C-SPC n") 'next-multiframe-window)
   (global-set-key (kbd "C-SPC p") 'previous-multiframe-window)
+  (global-set-key (kbd "C-p")  'recenter-top-bottom)
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Scaling
+  (global-set-key (kbd "C-M-<left>")  'shrink-window-horizontally)
+  (global-set-key (kbd "C-M-<right>") 'enlarge-window-horizontally)
+  (global-set-key (kbd "C-M-<down>")  'shrink-window)
+  (global-set-key (kbd "C-M-<up>")    'enlarge-window)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; MINIBUFFER HISTORY
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-key minibuffer-local-map (kbd "<up>")   'previous-history-element)
   (define-key minibuffer-local-map (kbd "<down>") 'next-history-element)
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;; EDITION SHORTCUT ;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; ;;;;; EDITION SHORTCUT ;;;;;;;
-  ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; UNDO/REDO
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (global-set-key (kbd "C-z") 'undo)
   (global-set-key (kbd "M-z") 'redo)
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; KILL WORD/LINE
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;; Hack to solve problem for tab and C-i
   ;;(global-set-key "\t" 'self-insert-command)
@@ -514,18 +521,18 @@
   (global-set-key "\M-u" 	  'my-kill-line)
   (global-set-key [delete] 'delete-char) ;; delete standard behaviour
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;
   ;; COPY / CUT / PASTE ;;
-    ;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;
 
   (global-set-key (kbd "C-SPC c") 'my-clipboard-kill-ring-save)
   (global-set-key (kbd "C-SPC d") 'kill-region)
   (global-set-key (kbd "C-v") 	'yank)
   (global-set-key (kbd "M-v") 	'yank-pop)
 
-    ;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;
   ;; RECTANGLES ;;
-    ;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;
   (global-set-key (kbd "M-e") 'rectangle-mark-mode)
   (global-set-key (kbd "C-SPC r c") 'copy-rectangle-to-register)    ;; supprime un rectangle en l'enregistrant
   (global-set-key (kbd "C-SPC r v") 'yank-rectangle)   	;; insère le dernier rectangle enregistré
@@ -533,9 +540,9 @@
   (global-set-key (kbd "C-SPC r d") 'kill-rectangle) 	;; supprime un rectangle sans l'enregistrer
   (global-set-key (kbd "C-SPC r t") 'string-rectangle)   	;; insérer un string dans un rectangle
 
-    ;;;;;;;;;;
+  ;;;;;;;;;;
   ;; WORD ;;
-    ;;;;;;;;;;
+  ;;;;;;;;;;
 
   ;; PAGE
   (global-set-key "\C-n" 'forward-word)
@@ -549,11 +556,9 @@
   (global-set-key "\M-d" 'beginning-of-buffer)
   (global-set-key "\M-l" 'end-of-buffer)
 
-
-    ;;;;;;;;;
+  ;;;;;;;;;
   ;; DEV ;;
-    ;;;;;;;;;
-
+  ;;;;;;;;;
 
   (global-set-key (kbd "C-SPC i") 'indent-region)
 
@@ -576,9 +581,9 @@
   (global-set-key (kbd "\C-s") 'scroll-up-lot)
   (global-set-key (kbd "\C-r") 'scroll-down-lot)
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Completion automatique ;;
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (global-set-key [(f1)] 'dabbrev-completion)
   (global-set-key (kbd "C-q") 'dabbrev-expand)
 
@@ -590,9 +595,9 @@
   ;;(global-set-key "\M-t" 'tabbar-backward-tab)
   ;;(global-set-key "\M-n" 'tabbar-forward-tab)
 
-    ;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;
   ;; Recherche ;;
-    ;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;
   (global-set-key (kbd "C-f") 'isearch-forward)
   (global-set-key (kbd "M-f") 'isearch-backward)
   (define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
@@ -600,21 +605,6 @@
 
   ;; ne detruit pas le serveur si le fichier dans lequel on se trouve est un client
   (global-set-key (kbd "C-SPC q") 'intelligent-close)
-
-    ;;;;;;;;;;;;;;;;;;;
-  ;; FRAME SCALING ;;
-    ;;;;;;;;;;;;;;;;;;;
-  (global-set-key (kbd "C-M-<left>")  'shrink-window-horizontally)
-  (global-set-key (kbd "C-M-<right>") 'enlarge-window-horizontally)
-  (global-set-key (kbd "C-M-<down>")  'shrink-window)
-  (global-set-key (kbd "C-M-<up>")    'enlarge-window)
-
-    ;;;;;;;;;;;;;
-  ;; Compile ;;
-    ;;;;;;;;;;;;;
-  (global-set-key (kbd "C-p")  'recenter-top-bottom)
-
-  (global-set-key (kbd "C-SPC m")  'rename-this-buffer-and-file)
 
 #+end_src
 
@@ -654,13 +644,13 @@
   (setq split-width-threshold 0)
 
   ;; BACKUP
-  (defvar my-backup-directory (concat user-emacs-directory "backups"))
-  (unless (file-exists-p my-backup-directory)
-    (make-directory my-backup-directory))
-  (setq backup-directory-alist
-        `((".*" . ,my-backup-directory)))
-  (setq auto-save-file-name-transforms
-        `((".*" ,my-backup-directory t)))
+  ;; Create the autosave dir if necessary, since emacs won't.
+  (make-directory "~/.emacs.d/autosaves/" t)
+  (make-directory "~/.emacs.d/backups/" t)
+  (custom-set-variables
+    '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
+    '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
+
   (setq delete-old-versions t
         backup-by-copying t          ; copy rather than rename, slower but simpler
         kept-new-versions 6
@@ -1124,61 +1114,96 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
 
 #+begin_src emacs-lisp
 
-  (install-package 'lsp-mode)
-  (install-package 'lsp-haskell)
-  (install-package 'lsp-ui)
+    (install-package 'lsp-mode)
+    ;; The real lsp haskell mode for emacs is https://github.com/emacs-lsp/lsp-haskell/
+    ;; Because it doesn't work that great (takes up a lot of memory and has many bugs), I
+    ;; prefer using static-ls (https://github.com/josephsumabat/static-ls)
+    ;; (install-package 'lsp-haskell)
+    (install-package 'lsp-ui)
 
-  (require 'lsp-mode)
-  (add-hook 'haskell-mode-hook #'lsp)
-  (add-hook 'elm-mode-hook #'lsp)
-  (add-hook 'haskell-literate-mode-hook #'lsp)
+    ;; This is a custom configuration to make static-ls works
+    ;; Most of the code is taken and adapted from https://github.com/emacs-lsp/lsp-haskell/blob/master/lsp-haskell.el
 
-  (setq lsp-enable-file-watchers nil) ; not sure why we would need this but enabling this on big project slows down everything considerably
+    ;; I don't know what this does :-/
+    (require 'lsp-mode)
+    (defun lsp-haskell--action-filter (command)
+      "lsp-mode transforms JSON false values in code action
+    arguments to JSON null values when sending the requests back to
+    the server. We need to explicitly tell it which code action
+    arguments are non-nullable booleans."
+      (lsp-fix-code-action-booleans command '(:restrictToOriginatingFile :withSig)))
 
-  (setq lsp-keymap-prefix "C-b")
-  (define-key lsp-mode-map (kbd "C-b") lsp-command-map)
-  (define-key lsp-command-map (kbd "e") 'lsp-execute-code-action)
-  (define-key lsp-command-map (kbd "r") 'lsp-find-references)
-  (define-key lsp-command-map (kbd "d") 'lsp-find-definition)
+    (defun lsp-register-client-wrapper (command)
+      "this function only calls the real lsp-register-client"
+      (lsp-register-client
+       (make-lsp--client
+        :new-connection (lsp-stdio-connection command)
 
-  (setq lsp-ui-sideline-show-code-actions t ;; show code actions in sideline
-        lsp-ui-doc-show-with-cursor t ;; move the cursor over a symbol to show the doc
-        )
+        ;; Should run under haskell-mode, haskell-literate-mode and haskell-tng-mode. We need to list haskell-literate-mode even though it's a derived mode of haskell-mode.
+        :major-modes '(haskell-mode)
+        ;; This is arbitrary.
+        :server-id 'lsp-haskell
+        :synchronize-sections '("haskell")
+        ;; This is somewhat irrelevant, but it is listed in lsp-language-id-configuration, so
+        ;; we should set something consistent here.
+        :language-id "haskell"
+        :completion-in-comments? t
+        :action-filter #'lsp-haskell--action-filter
+        )))
 
+    ;; This is quite ugly, only register the lsp-client if we have started emacs from the kontrakcja/ folder.
+    (if (string= (expand-file-name default-directory) (expand-file-name "~/scrive/repo/kontrakcja/"))
+        (lsp-register-client-wrapper '("docker" "compose" "-f" "/home/iori/scrive/repo/kontrakcja/docker/docker-compose.iori.yml" "exec" "devel-extended" "static-ls")))
 
-  ;;; Shortcuts
+    (add-hook 'haskell-mode-hook #'lsp)
+    (add-hook 'elm-mode-hook #'lsp)
+    (add-hook 'haskell-literate-mode-hook #'lsp)
 
-  (eval-after-load "haskell-mode"
-    '(progn
-       (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
-       (define-key haskell-mode-map (kbd "C-c C-l") 'my-haskell-process-load-file)
-       (define-key haskell-mode-map (kbd "C-c C-m") 'my-load-and-execute)
-       (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
-       (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
-       ))
+    (setq lsp-enable-file-watchers nil) ; not sure why we would need this but enabling this on big project slows down everything considerably
 
-;;  (define-key haskell-mode-map (kbd "M-s") 'haskell-interactive-mode-history-previous)
-;;  (define-key haskell-mode-map (kbd "M-r") 'haskell-interactive-mode-history-next)
-  (define-key haskell-cabal-mode-map (kbd "M-n") 'centaur-tabs-forward)
+    (setq lsp-keymap-prefix "C-b")
+    (define-key lsp-mode-map (kbd "C-b") lsp-command-map)
+    (define-key lsp-command-map (kbd "e") 'lsp-execute-code-action)
+    (define-key lsp-command-map (kbd "r") 'lsp-find-references)
+    (define-key lsp-command-map (kbd "d") 'lsp-find-definition)
 
-  (defun my-haskell-process-load-file ()
-    (interactive)
-    "clear console & load code"
-                                          ;  (when (fboundp 'haskell-interactive-mode-clear)
-    (haskell-interactive-mode-clear)
-    (haskell-process-load-file))
+    (setq lsp-ui-sideline-show-code-actions t ;; show code actions in sideline
+          lsp-ui-doc-show-with-cursor t ;; move the cursor over a symbol to show the doc
+          )
 
-  (defun my-load-and-execute ()
-    (interactive)
-    "load or reload code and execute the m function if present"
-    (save-excursion
-      (my-haskell-process-load-file)
-      (haskell-interactive-switch)
-      (insert "main")
-      (haskell-interactive-mode-return)
-      (sit-for 0.500)
-      (haskell-interactive-switch-back)
-      ))
+    ;;; Shortcuts
+
+    (eval-after-load "haskell-mode"
+      '(progn
+         (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
+         (define-key haskell-mode-map (kbd "C-c C-l") 'my-haskell-process-load-file)
+         (define-key haskell-mode-map (kbd "C-c C-m") 'my-load-and-execute)
+         (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
+         (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
+         ))
+
+  ;;  (define-key haskell-mode-map (kbd "M-s") 'haskell-interactive-mode-history-previous)
+  ;;  (define-key haskell-mode-map (kbd "M-r") 'haskell-interactive-mode-history-next)
+    (define-key haskell-cabal-mode-map (kbd "M-n") 'centaur-tabs-forward)
+
+    (defun my-haskell-process-load-file ()
+      (interactive)
+      "clear console & load code"
+                                            ;  (when (fboundp 'haskell-interactive-mode-clear)
+      (haskell-interactive-mode-clear)
+      (haskell-process-load-file))
+
+    (defun my-load-and-execute ()
+      (interactive)
+      "load or reload code and execute the m function if present"
+      (save-excursion
+        (my-haskell-process-load-file)
+        (haskell-interactive-switch)
+        (insert "main")
+        (haskell-interactive-mode-return)
+        (sit-for 0.500)
+        (haskell-interactive-switch-back)
+        ))
 
 #+end_src
 
@@ -1320,7 +1345,7 @@ Theme synchronize with daylight. Theme is light during daytime and dark otherwis
    '(centaur-tabs-show-new-tab-button nil)
    '(lsp-enable-file-watchers nil)
    '(package-selected-packages
-     '(perspective yasnippet-snippets yasnippet rip-grep git-link lsp-ui doom-themes centaur-tabs lsp-haskell lsp-mode haskell-mode nix-mode helm-ag csv-mode elm-mode markdown-mode magit multiple-cursors expand-region ace-jump-mode projectile tabbar dash))
+     '(perspective yasnippet-snippets yasnippet rip-grep git-link lsp-ui doom-themes centaur-tabs  lsp-mode haskell-mode nix-mode helm-ag csv-mode elm-mode markdown-mode magit multiple-cursors expand-region ace-jump-mode projectile tabbar dash))
    '(tab-bar-close-button-show nil)
    '(tab-bar-close-tab-select 'left)
    '(tab-bar-new-button-show nil)

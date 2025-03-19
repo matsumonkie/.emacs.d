@@ -5,10 +5,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
+ '(backup-directory-alist '((".*" . "~/.emacs.d/backups/")))
  '(centaur-tabs-show-new-tab-button nil)
  '(lsp-enable-file-watchers nil)
- '(package-selected-packages
-   '(perspective yasnippet-snippets yasnippet rip-grep git-link lsp-ui doom-themes centaur-tabs lsp-haskell lsp-mode haskell-mode nix-mode helm-ag csv-mode elm-mode markdown-mode magit multiple-cursors expand-region ace-jump-mode projectile flx-ido tabbar dash))
+ '(lsp-log-io t)
+ '(package-selected-packages nil)
  '(tab-bar-close-button-show nil)
  '(tab-bar-close-tab-select 'left)
  '(tab-bar-new-button-show nil)
