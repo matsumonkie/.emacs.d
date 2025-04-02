@@ -1151,9 +1151,32 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
         :action-filter #'lsp-haskell--action-filter
         )))
 
-    ;; This is quite ugly, only register the lsp-client if we have started emacs from the kontrakcja/ folder.
-    (if (string= (expand-file-name default-directory) (expand-file-name "~/scrive/repo/kontrakcja/"))
-        (lsp-register-client-wrapper '("docker" "compose" "-f" "/home/iori/scrive/repo/kontrakcja/docker/docker-compose.iori.yml" "exec" "devel-extended" "static-ls")))
+    (defun find-git-root (dir)
+      "Find the root of the Git repository containing DIR, or nil if not in a Git repo."
+      (let ((default-directory dir))
+        (when (locate-dominating-file dir ".git")
+          (expand-file-name (locate-dominating-file dir ".git")))))
+
+    (defun get-git-worktree (repo-root)
+      "Find the worktree directory inside REPO-ROOT."
+      (let* ((default-directory repo-root)
+             (worktree (shell-command-to-string "git rev-parse --show-toplevel")))
+        (when (string-match "\\S-" worktree)  ;; Ensure it's not empty
+          (string-trim worktree))))
+
+    (defun setup-lsp-for-kontrakcja ()
+    "Setup LSP if inside a kontrakcja Git worktree."
+    (let* ((current-dir (expand-file-name default-directory))
+           (kontrakcja-root "/home/iori/scrive/repo/kontrakcja")
+           (repo-root (find-git-root current-dir)))
+      (when (and repo-root (string-prefix-p kontrakcja-root repo-root))
+        (let ((worktree (get-git-worktree repo-root)))
+          (when worktree
+            (lsp-register-client-wrapper
+             `("docker" "compose" "-f" ,(concat worktree "/docker/docker-compose.iori.yml")
+               "exec" "devel-extended" "static-ls")))))))
+
+    (setup-lsp-for-kontrakcja)
 
     (add-hook 'haskell-mode-hook #'lsp)
     (add-hook 'elm-mode-hook #'lsp)
