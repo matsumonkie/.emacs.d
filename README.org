@@ -23,8 +23,10 @@
   - [[#hlint][hlint]]
   - [[#multiple-cursor][multiple cursor]]
   - [[#magit][magit]]
+  - [[#olivetti][Olivetti]]
   - [[#org][org]]
   - [[#projectile][projectile]]
+  - [[#perspective][perspective]]
   - [[#vertico][Vertico]]
   - [[#tab-bar][tab-bar]]
   - [[#savehist-mode][savehist-mode]]
@@ -472,8 +474,6 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; WINDOWS
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (global-set-key "\M-b" 'next-buffer)
-  (global-set-key "\M-b" 'next-buffer)
   (global-set-key (kbd "C-SPC O") 'previous-multiframe-window)
   (global-set-key [f12] 'repeat-complex-command)
   (global-set-key (kbd "C-SPC n") 'next-multiframe-window)
@@ -970,6 +970,18 @@ ripgrep for emacs
 
 #+end_src
 
+** Olivetti
+
+Similar to a zen mode where the main frame can be centered for better reading.
+
+#+begin_src emacs-lisp
+
+  (install-package 'olivetti)
+  (defalias 'zen 'olivetti-mode)
+
+#+end_src
+
+
 ** org
 
 #+begin_src emacs-lisp
@@ -989,6 +1001,20 @@ find file in a git scoped project
   (projectile-mode)
   (global-set-key (kbd "C-SPC a") 'projectile-find-file)
   (global-set-key (kbd "C-SPC p") 'projectile-switch-project)
+
+#+end_src
+
+** perspective
+
+find file in a git scoped project
+
+#+begin_src emacs-lisp
+
+  (install-package 'perspective)
+  ;;(global-set-key (kbd "C-x C-b") 'persp-list-buffers)
+  (customize-set-variable 'persp-mode-prefix-key (kbd "M-b"))
+  (global-set-key (kbd "C-SPC b") 'persp-switch-to-buffer*)
+  (persp-mode)
 
 #+end_src
 
@@ -1069,34 +1095,10 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
 #+begin_src emacs-lisp
   (install-package 'haskell-mode)
   (require 'haskell-mode)
-  (require 'haskell-interactive-mode)
-  (require 'haskell-process)
 
   ;; This will auto insert "module XXX where" template when creating a new XXX.hs file
   (add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
 
-  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-
-  ;; With ghc 8.X, errors are no longer shown in the repl. This fix it !
-  (setq haskell-process-args-stack-ghci
-        '("--ghci-options=-ferror-spans -fshow-loaded-modules"
-          "--no-build" "--no-load"))
-
-  (setq haskell-compile-cabal-build-command "stack build")
-
-  ;; Create tags on save
-
-  (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-tag-find)
-
-  ;; somehow this settings remove the pragma: {-# LANGUAGE ViewPatterns #-} on every save...
-                                          ;(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
-                                          ; '(haskell-stylish-on-save t)
-                                          ; '(package-selected-packages
-                                          ;   '(lsp-mode hs-lint nix-mode haskell-mode outshine helm-ag csv-mode elm-mode markdown-mode magit multiple-cursors expand-region ace-jump-mode projectile flx-ido grip-mode try dash)))
 #+end_src
 
 ** git link
@@ -1383,12 +1385,15 @@ Save your current session when you exit emacs and load it back when you start em
 
 #+begin_src emacs-lisp
 
-  (desktop-save-mode)
+  ;; desktop-save-mode doesn't work with perspective
+  ;; disabling for now in favor of perspective
+
+  ;;(desktop-save-mode)
   ;; save the session in the directory where emacs was invoked
-  (setq desktop-path '("."))
-  (desktop-read ".")
+  ;;(setq desktop-path '("."))
+  ;;(desktop-read ".")
   ;; if another emacs session is opened, don't show a warning
-  (setq desktop-load-locked-desktop t)
+  ;;(setq desktop-load-locked-desktop t)
 
 
 #+end_src

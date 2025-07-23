@@ -8,6 +8,9 @@
  '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
  '(backup-directory-alist '((".*" . "~/.emacs.d/backups/")))
  '(centaur-tabs-show-new-tab-button nil)
+ '(custom-safe-themes
+   '("0325a6b5eea7e5febae709dab35ec8648908af12cf2d2b569bedc8da0a3a81c1"
+     default))
  '(lsp-enable-file-watchers nil)
  '(lsp-log-io t)
  '(package-selected-packages nil)
