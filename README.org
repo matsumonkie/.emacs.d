@@ -1116,119 +1116,128 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
 
 #+begin_src emacs-lisp
 
-    (install-package 'lsp-mode)
-    ;; The real lsp haskell mode for emacs is https://github.com/emacs-lsp/lsp-haskell/
-    ;; Because it doesn't work that great (takes up a lot of memory and has many bugs), I
-    ;; prefer using static-ls (https://github.com/josephsumabat/static-ls)
-    ;; (install-package 'lsp-haskell)
-    (install-package 'lsp-ui)
+      (install-package 'lsp-mode)
+      ;; The real lsp haskell mode for emacs is https://github.com/emacs-lsp/lsp-haskell/
+      ;; Because it doesn't work that great (takes up a lot of memory and has many bugs), I
+      ;; prefer using static-ls (https://github.com/josephsumabat/static-ls)
+      ;; (install-package 'lsp-haskell)
+      (install-package 'lsp-ui)
 
-    ;; This is a custom configuration to make static-ls works
-    ;; Most of the code is taken and adapted from https://github.com/emacs-lsp/lsp-haskell/blob/master/lsp-haskell.el
+      ;; This is a custom configuration to make static-ls works
+      ;; Most of the code is taken and adapted from https://github.com/emacs-lsp/lsp-haskell/blob/master/lsp-haskell.el
 
-    ;; I don't know what this does :-/
-    (require 'lsp-mode)
-    (defun lsp-haskell--action-filter (command)
-      "lsp-mode transforms JSON false values in code action
-    arguments to JSON null values when sending the requests back to
-    the server. We need to explicitly tell it which code action
-    arguments are non-nullable booleans."
-      (lsp-fix-code-action-booleans command '(:restrictToOriginatingFile :withSig)))
+      ;; I don't know what this does :-/
+      (require 'lsp-mode)
+      (defun lsp-haskell--action-filter (command)
+        "lsp-mode transforms JSON false values in code action
+      arguments to JSON null values when sending the requests back to
+      the server. We need to explicitly tell it which code action
+      arguments are non-nullable booleans."
+        (lsp-fix-code-action-booleans command '(:restrictToOriginatingFile :withSig)))
 
-    (defun lsp-register-client-wrapper (command)
-      "this function only calls the real lsp-register-client"
-      (lsp-register-client
-       (make-lsp--client
-        :new-connection (lsp-stdio-connection command)
+      (defun lsp-register-client-wrapper (command)
+        "this function only calls the real lsp-register-client"
+        (lsp-register-client
+         (make-lsp--client
+          :new-connection (lsp-stdio-connection command)
 
-        ;; Should run under haskell-mode, haskell-literate-mode and haskell-tng-mode. We need to list haskell-literate-mode even though it's a derived mode of haskell-mode.
-        :major-modes '(haskell-mode)
-        ;; This is arbitrary.
-        :server-id 'lsp-haskell
-        :synchronize-sections '("haskell")
-        ;; This is somewhat irrelevant, but it is listed in lsp-language-id-configuration, so
-        ;; we should set something consistent here.
-        :language-id "haskell"
-        :completion-in-comments? t
-        :action-filter #'lsp-haskell--action-filter
-        )))
+          ;; Should run under haskell-mode, haskell-literate-mode and haskell-tng-mode. We need to list haskell-literate-mode even though it's a derived mode of haskell-mode.
+          :major-modes '(haskell-mode)
+          ;; This is arbitrary.
+          :server-id 'lsp-haskell
+          :synchronize-sections '("haskell")
+          ;; This is somewhat irrelevant, but it is listed in lsp-language-id-configuration, so
+          ;; we should set something consistent here.
+          :language-id "haskell"
+          :completion-in-comments? t
+          :action-filter #'lsp-haskell--action-filter
+          )))
 
-    (defun find-git-root (dir)
-      "Find the root of the Git repository containing DIR, or nil if not in a Git repo."
-      (let ((default-directory dir))
-        (when (locate-dominating-file dir ".git")
-          (expand-file-name (locate-dominating-file dir ".git")))))
+      (defun find-git-root (dir)
+        "Find the root of the Git repository containing DIR, or nil if not in a Git repo."
+        (let ((default-directory dir))
+          (when (locate-dominating-file dir ".git")
+            (expand-file-name (locate-dominating-file dir ".git")))))
 
-    (defun get-git-worktree (repo-root)
-      "Find the worktree directory inside REPO-ROOT."
-      (let* ((default-directory repo-root)
-             (worktree (shell-command-to-string "git rev-parse --show-toplevel")))
-        (when (string-match "\\S-" worktree)  ;; Ensure it's not empty
-          (string-trim worktree))))
+      (defun get-git-worktree (repo-root)
+        "Find the worktree directory inside REPO-ROOT."
+        (let* ((default-directory repo-root)
+               (worktree (shell-command-to-string "git rev-parse --show-toplevel")))
+          (when (string-match "\\S-" worktree)  ;; Ensure it's not empty
+            (string-trim worktree))))
 
-    (defun setup-lsp-for-kontrakcja ()
-    "Setup LSP if inside a kontrakcja Git worktree."
-    (let* ((current-dir (expand-file-name default-directory))
-           (kontrakcja-root "/home/iori/scrive/repo/kontrakcja")
-           (repo-root (find-git-root current-dir)))
-      (when (and repo-root (string-prefix-p kontrakcja-root repo-root))
-        (let ((worktree (get-git-worktree repo-root)))
-          (when worktree
-            (lsp-register-client-wrapper
-             `("docker" "compose" "-f" ,(concat worktree "/docker/docker-compose.iori.yml")
-               "exec" "devel-extended" "static-ls")))))))
+      (defun setup-lsp-for-kontrakcja ()
+      "Setup LSP if inside a kontrakcja Git worktree."
+      (let* ((current-dir (expand-file-name default-directory))
+             (kontrakcja-root "/home/iori/scrive/repo/kontrakcja")
+             (repo-root (find-git-root current-dir)))
+        (when (and repo-root (string-prefix-p kontrakcja-root repo-root))
+          (let ((worktree (get-git-worktree repo-root)))
+            (when worktree
+              (lsp-register-client-wrapper
+               `("docker" "compose" "-f" ,(concat worktree "/docker/docker-compose.iori.yml")
+                 "exec" "devel-extended" "static-ls")))))))
 
-    (setup-lsp-for-kontrakcja)
+      (setup-lsp-for-kontrakcja)
 
-    (add-hook 'haskell-mode-hook #'lsp)
-    (add-hook 'elm-mode-hook #'lsp)
-    (add-hook 'haskell-literate-mode-hook #'lsp)
+      (add-hook 'haskell-mode-hook #'lsp)
+      (add-hook 'elm-mode-hook #'lsp)
+      (add-hook 'haskell-literate-mode-hook #'lsp)
 
-    (setq lsp-enable-file-watchers nil) ; not sure why we would need this but enabling this on big project slows down everything considerably
+      (setq lsp-enable-file-watchers nil) ; not sure why we would need this but enabling this on big project slows down everything considerably
 
-    (setq lsp-keymap-prefix "C-b")
-    (define-key lsp-mode-map (kbd "C-b") lsp-command-map)
-    (define-key lsp-command-map (kbd "e") 'lsp-execute-code-action)
-    (define-key lsp-command-map (kbd "r") 'lsp-find-references)
-    (define-key lsp-command-map (kbd "d") 'lsp-find-definition)
+      (setq lsp-keymap-prefix "C-b")
+      (define-key lsp-mode-map (kbd "C-b") lsp-command-map)
+      (define-key lsp-command-map (kbd "e") 'lsp-execute-code-action)
+      (define-key lsp-command-map (kbd "r") 'lsp-find-references)
+      (define-key lsp-command-map (kbd "d") 'lsp-find-definition)
 
-    (setq lsp-ui-sideline-show-code-actions t ;; show code actions in sideline
-          lsp-ui-doc-show-with-cursor t ;; move the cursor over a symbol to show the doc
-          )
+      (setq lsp-ui-sideline-show-code-actions t ;; show code actions in sideline
+            lsp-ui-doc-show-with-cursor t ;; move the cursor over a symbol to show the doc
+            )
 
-    ;;; Shortcuts
+      ;;; Shortcuts
 
-    (eval-after-load "haskell-mode"
-      '(progn
-         (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
-         (define-key haskell-mode-map (kbd "C-c C-l") 'my-haskell-process-load-file)
-         (define-key haskell-mode-map (kbd "C-c C-m") 'my-load-and-execute)
-         (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
-         (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
-         ))
+      (eval-after-load "haskell-mode"
+        '(progn
+           (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
+           (define-key haskell-mode-map (kbd "C-c C-l") 'my-haskell-process-load-file)
+           (define-key haskell-mode-map (kbd "C-c C-m") 'my-load-and-execute)
+           (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
+           (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
+           (define-key haskell-mode-map (kbd "M-.") 'xref-find-definitions)
+           ))
 
-  ;;  (define-key haskell-mode-map (kbd "M-s") 'haskell-interactive-mode-history-previous)
-  ;;  (define-key haskell-mode-map (kbd "M-r") 'haskell-interactive-mode-history-next)
-    (define-key haskell-cabal-mode-map (kbd "M-n") 'centaur-tabs-forward)
+      (define-key lsp-mode-map (kbd "M-.") 'xref-find-definitions)
 
-    (defun my-haskell-process-load-file ()
-      (interactive)
-      "clear console & load code"
-                                            ;  (when (fboundp 'haskell-interactive-mode-clear)
-      (haskell-interactive-mode-clear)
-      (haskell-process-load-file))
+    ;;  (define-key haskell-mode-map (kbd "M-s") 'haskell-interactive-mode-history-previous)
+    ;;  (define-key haskell-mode-map (kbd "M-r") 'haskell-interactive-mode-history-next)
+      (define-key haskell-cabal-mode-map (kbd "M-n") 'centaur-tabs-forward)
 
-    (defun my-load-and-execute ()
-      (interactive)
-      "load or reload code and execute the m function if present"
-      (save-excursion
-        (my-haskell-process-load-file)
-        (haskell-interactive-switch)
-        (insert "main")
-        (haskell-interactive-mode-return)
-        (sit-for 0.500)
-        (haskell-interactive-switch-back)
-        ))
+      (defun my/haskell-mode-setup ()
+        (local-set-key (kbd "M-.") #'xref-find-definitions))
+
+      (add-hook 'haskell-mode-hook #'my/haskell-mode-setup)
+      (add-hook 'lsp-mode-hook #'my/haskell-mode-setup)
+
+      (defun my-haskell-process-load-file ()
+        (interactive)
+        "clear console & load code"
+                                              ;  (when (fboundp 'haskell-interactive-mode-clear)
+        (haskell-interactive-mode-clear)
+        (haskell-process-load-file))
+
+      (defun my-load-and-execute ()
+        (interactive)
+        "load or reload code and execute the m function if present"
+        (save-excursion
+          (my-haskell-process-load-file)
+          (haskell-interactive-switch)
+          (insert "main")
+          (haskell-interactive-mode-return)
+          (sit-for 0.500)
+          (haskell-interactive-switch-back)
+          ))
 
 #+end_src
 
