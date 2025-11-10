@@ -85,6 +85,9 @@
 
   (message "\n -- setting alias --\n")
 
+  ;; ** Theme
+  (defalias 'tt 'my-toggle-theme)
+
   ;; ** tab-bar
 
   (defalias 'nt 'tab-bar-new-tab)
@@ -190,238 +193,251 @@
 
 #+begin_src emacs-lisp
 
-  (message "\n -- setting functions --\n")
+    (message "\n -- setting functions --\n")
 
-  (defun my-kill-buffer ()
-    "kill current buffer without asking if it's the good one"
-    (interactive)
-    (kill-buffer (current-buffer)))
+    (defun my-kill-buffer ()
+      "kill current buffer without asking if it's the good one"
+      (interactive)
+      (kill-buffer (current-buffer)))
 
-  (defun my-backward-kill-line ()
-    "Kill backward from point to beginning of line"
-    (interactive) (kill-line 0))
+    (defun my-backward-kill-line ()
+      "Kill backward from point to beginning of line"
+      (interactive) (kill-line 0))
 
-  (defun my-kill-line ()
-    "Kill whole line if point is at the beginning of the line else only kill line"
-    (interactive)
-    (if (equal (point) (line-beginning-position))
-        (kill-whole-line)
-      (kill-line)))
+    (defun my-kill-line ()
+      "Kill whole line if point is at the beginning of the line else only kill line"
+      (interactive)
+      (if (equal (point) (line-beginning-position))
+          (kill-whole-line)
+        (kill-line)))
 
-  (defun my-clipboard-kill-ring-save ()
-    "Copy current line in the kill ring or region"
-    (interactive)
-    (if (use-region-p)
-        (clipboard-kill-ring-save (region-beginning) (region-end))
-      (kill-ring-save (line-beginning-position)
-                      (line-beginning-position 2))
-      (message "Line copied")))
+    (defun my-clipboard-kill-ring-save ()
+      "Copy current line in the kill ring or region"
+      (interactive)
+      (if (use-region-p)
+          (clipboard-kill-ring-save (region-beginning) (region-end))
+        (kill-ring-save (line-beginning-position)
+                        (line-beginning-position 2))
+        (message "Line copied")))
 
-  (defun scroll-up-lot ()
-    (interactive)
-    (forward-line -2))
+    (defun scroll-up-lot ()
+      (interactive)
+      (forward-line -2))
 
-  (defun scroll-down-lot ()
-    (interactive)
-    (forward-line 2))
+    (defun scroll-down-lot ()
+      (interactive)
+      (forward-line 2))
 
-  (defun my-comment-line (n)
-    "Comment or uncomment current line.
-    With positive prefix, apply to N lines including current one.
-    With negative prefix, apply to -N lines above.  Also, further
-    consecutive invocations of this command will inherit the negative
-    argument.
+    (defun my-comment-line (n)
+      "Comment or uncomment current line.
+      With positive prefix, apply to N lines including current one.
+      With negative prefix, apply to -N lines above.  Also, further
+      consecutive invocations of this command will inherit the negative
+      argument.
 
-    If region is active, comment lines in active region instead.
-    Unlike `comment-dwim', this always comments whole lines."
-    (interactive "p")
-    (if (use-region-p)
-        (comment-or-uncomment-region
-         (save-excursion
-           (goto-char (region-beginning))
-           (line-beginning-position))
-         (save-excursion
-           (goto-char (region-end))
-           (line-end-position)))
-      (when (and (eq last-command 'comment-line-backward)
-                 (natnump n))
-        (setq n (- n)))
-      (let ((range
-             (list (line-beginning-position)
-                   (goto-char (line-end-position n)))))
-        (comment-or-uncomment-region
-         (apply #'min range)
-         (apply #'max range)))
-      (back-to-indentation)
-      (unless (natnump n) (setq this-command 'comment-line-backward))))
+      If region is active, comment lines in active region instead.
+      Unlike `comment-dwim', this always comments whole lines."
+      (interactive "p")
+      (if (use-region-p)
+          (comment-or-uncomment-region
+           (save-excursion
+             (goto-char (region-beginning))
+             (line-beginning-position))
+           (save-excursion
+             (goto-char (region-end))
+             (line-end-position)))
+        (when (and (eq last-command 'comment-line-backward)
+                   (natnump n))
+          (setq n (- n)))
+        (let ((range
+               (list (line-beginning-position)
+                     (goto-char (line-end-position n)))))
+          (comment-or-uncomment-region
+           (apply #'min range)
+           (apply #'max range)))
+        (back-to-indentation)
+        (unless (natnump n) (setq this-command 'comment-line-backward))))
 
-  (defun move-line (n)
-    "Move the current line up or down by N lines."
-    (interactive "p")
-    (setq col (current-column))
-    (beginning-of-line) (setq start (point))
-    (end-of-line) (forward-char) (setq end (point))
-    (let ((line-text (delete-and-extract-region start end)))
-      (forward-line n)
-      (insert line-text)
-      ;; restore point to original column in moved line
-      (forward-line -1)
-      (forward-char col)))
-
-  (defun move-line-up (n)
-    "Move the current line up by N lines."
-    (interactive "p")
-    (move-line (if (null n) -1 (- n))))
-
-  (defun move-line-down (n)
-    "Move the current line down by N lines."
-    (interactive "p")
-    (move-line (if (null n) 1 n)))
-
-  (defun move-region (start end n)
-    "Move the current region up or down by N lines."
-    (interactive "r\np")
-    (let ((line-text (delete-and-extract-region start end)))
-      (forward-line n)
-      (let ((start (point)))
+    (defun move-line (n)
+      "Move the current line up or down by N lines."
+      (interactive "p")
+      (setq col (current-column))
+      (beginning-of-line) (setq start (point))
+      (end-of-line) (forward-char) (setq end (point))
+      (let ((line-text (delete-and-extract-region start end)))
+        (forward-line n)
         (insert line-text)
-        (setq deactivate-mark nil)
-        (set-mark start))))
+        ;; restore point to original column in moved line
+        (forward-line -1)
+        (forward-char col)))
 
-  (defun move-region-up (start end n)
-    "Move the current line up by N lines."
-    (interactive "r\np")
-    (move-region start end (if (null n) -1 (- n))))
+    (defun move-line-up (n)
+      "Move the current line up by N lines."
+      (interactive "p")
+      (move-line (if (null n) -1 (- n))))
 
-  (defun move-region-down (start end n)
-    "Move the current line down by N lines."
-    (interactive "r\np")
-    (move-region start end (if (null n) 1 n)))
+    (defun move-line-down (n)
+      "Move the current line down by N lines."
+      (interactive "p")
+      (move-line (if (null n) 1 n)))
 
-  (defun move-line-region-up (start end n)
-    (interactive "r\np")
-    (if (use-region-p)
-        (move-region-up start end n)
-      (move-line-up n)
-      ))
+    (defun move-region (start end n)
+      "Move the current region up or down by N lines."
+      (interactive "r\np")
+      (let ((line-text (delete-and-extract-region start end)))
+        (forward-line n)
+        (let ((start (point)))
+          (insert line-text)
+          (setq deactivate-mark nil)
+          (set-mark start))))
 
-  (defun move-line-region-down (start end n)
-    (interactive "r\np")
-    (if (use-region-p)
-        (move-region-down start end n)
-      (move-line-down n)))
+    (defun move-region-up (start end n)
+      "Move the current line up by N lines."
+      (interactive "r\np")
+      (move-region start end (if (null n) -1 (- n))))
 
-  (defun my-c-equal-align ()
-    "align region with the symbol '='"
-    (interactive)
-    (setq sym '=)
-    (align-regexp (region-beginning) (region-end) sym))
+    (defun move-region-down (start end n)
+      "Move the current line down by N lines."
+      (interactive "r\np")
+      (move-region start end (if (null n) 1 n)))
 
-  (defun intelligent-close ()
-    "quit a frame the same way no matter what kind of frame you are on"
-    (interactive)
-    (if (eq (car (visible-frame-list)) (selected-frame))
-        ;;for parent/master frame...
-        (if (> (length (visible-frame-list)) 1)
-            ;;close a parent with children present
-            (delete-frame (selected-frame))
-          ;;close a parent with no children present
-          (save-buffers-kill-emacs))
-      ;;close a child frame
-      (delete-frame (selected-frame))))
+    (defun move-line-region-up (start end n)
+      (interactive "r\np")
+      (if (use-region-p)
+          (move-region-up start end n)
+        (move-line-up n)
+        ))
 
-  (defun beginning-of-next-line()
-    "Moves cursor to the beginning of the next line, or nowhere if at end of the buffer"
-    (interactive)
-    (end-of-line)
-    (if (not (eobp))
-        (forward-char 1)))
+    (defun move-line-region-down (start end n)
+      (interactive "r\np")
+      (if (use-region-p)
+          (move-region-down start end n)
+        (move-line-down n)))
 
-  (defun my-format-buffer ()
-    "indent whole buffer and delete trailing whitespace"
-    (interactive)
-    (delete-trailing-whitespace)
-    (indent-region (point-min) (point-max) nil))
+    (defun my-c-equal-align ()
+      "align region with the symbol '='"
+      (interactive)
+      (setq sym '=)
+      (align-regexp (region-beginning) (region-end) sym))
 
-  (defun my-indent-buffer ()
-    "Indent the current buffer"
-    (interactive)
-    (save-excursion (indent-region (point-min) (point-max) nil)))
+    (defun intelligent-close ()
+      "quit a frame the same way no matter what kind of frame you are on"
+      (interactive)
+      (if (eq (car (visible-frame-list)) (selected-frame))
+          ;;for parent/master frame...
+          (if (> (length (visible-frame-list)) 1)
+              ;;close a parent with children present
+              (delete-frame (selected-frame))
+            ;;close a parent with no children present
+            (save-buffers-kill-emacs))
+        ;;close a child frame
+        (delete-frame (selected-frame))))
 
-  (defun my-forward-block (&optional φn)
-    "Move cursor forward to the beginning of next text block.
-      A text block is separated by blank lines."
-    (interactive "p")
-    (let ((φn (if (null φn) 1 φn)))
-      (search-forward-regexp "\n[\t\n ]*\n+" nil "NOERROR" φn)))
+    (defun beginning-of-next-line()
+      "Moves cursor to the beginning of the next line, or nowhere if at end of the buffer"
+      (interactive)
+      (end-of-line)
+      (if (not (eobp))
+          (forward-char 1)))
 
-  (defun my-backward-block (&optional φn)
-    "Move cursor backward to previous text block."
-    (interactive "p")
-    (let ((φn (if (null φn) 1 φn))
-          (ξi 1))
-      (while (<= ξi φn)
-        (if (search-backward-regexp "\n[\t\n ]*\n+" nil "NOERROR")
-            (progn (skip-chars-backward "\n\t "))
-          (progn (goto-char (point-min))
-                 (setq ξi φn)))
-        (setq ξi (1+ ξi)))))
+    (defun my-format-buffer ()
+      "indent whole buffer and delete trailing whitespace"
+      (interactive)
+      (delete-trailing-whitespace)
+      (indent-region (point-min) (point-max) nil))
+
+    (defun my-indent-buffer ()
+      "Indent the current buffer"
+      (interactive)
+      (save-excursion (indent-region (point-min) (point-max) nil)))
+
+    (defun my-forward-block (&optional φn)
+      "Move cursor forward to the beginning of next text block.
+        A text block is separated by blank lines."
+      (interactive "p")
+      (let ((φn (if (null φn) 1 φn)))
+        (search-forward-regexp "\n[\t\n ]*\n+" nil "NOERROR" φn)))
+
+    (defun my-backward-block (&optional φn)
+      "Move cursor backward to previous text block."
+      (interactive "p")
+      (let ((φn (if (null φn) 1 φn))
+            (ξi 1))
+        (while (<= ξi φn)
+          (if (search-backward-regexp "\n[\t\n ]*\n+" nil "NOERROR")
+              (progn (skip-chars-backward "\n\t "))
+            (progn (goto-char (point-min))
+                   (setq ξi φn)))
+          (setq ξi (1+ ξi)))))
 
 
-  ;; install xsel
-  (defun copy-to-clipboard ()
-    (interactive)
-    (if (display-graphic-p)
-        (progn
-          (message "Yanked region to x-clipboard!")
-          (call-interactively 'clipboard-kill-ring-save)
-          )
-      (if (region-active-p)
+    ;; install xsel
+    (defun copy-to-clipboard ()
+      (interactive)
+      (if (display-graphic-p)
           (progn
-            (shell-command-on-region (region-beginning) (region-end) "xsel -i -b")
-            (message "Yanked region to clipboard!")
-            (deactivate-mark))
-        (message "No region active; can't yank to clipboard!")))
-    )
-
-  (defun paste-from-clipboard ()
-    (interactive)
-    (if (display-graphic-p)
-        (progn
-          (clipboard-yank)
-          (message "graphics active")
-          )
-      (insert (shell-command-to-string "xsel -o -b"))
+            (message "Yanked region to x-clipboard!")
+            (call-interactively 'clipboard-kill-ring-save)
+            )
+        (if (region-active-p)
+            (progn
+              (shell-command-on-region (region-beginning) (region-end) "xsel -i -b")
+              (message "Yanked region to clipboard!")
+              (deactivate-mark))
+          (message "No region active; can't yank to clipboard!")))
       )
-    )
 
-  (global-set-key [f8] 'copy-to-clipboard)
-  (global-set-key [f9] 'paste-from-clipboard)
+    (defun paste-from-clipboard ()
+      (interactive)
+      (if (display-graphic-p)
+          (progn
+            (clipboard-yank)
+            (message "graphics active")
+            )
+        (insert (shell-command-to-string "xsel -o -b"))
+        )
+      )
 
-  (defun my-create-non-existent-directory ()
-    (let ((parent-directory (file-name-directory buffer-file-name)))
-      (when (and (not (file-exists-p parent-directory))
-                 (y-or-n-p (format "Directory `%s' does not exist! Create it?" parent-directory)))
-        (make-directory parent-directory t))))
+    (global-set-key [f8] 'copy-to-clipboard)
+    (global-set-key [f9] 'paste-from-clipboard)
 
-  (add-to-list 'find-file-not-found-functions #'my-create-non-existent-directory)
+    (defun my-create-non-existent-directory ()
+      (let ((parent-directory (file-name-directory buffer-file-name)))
+        (when (and (not (file-exists-p parent-directory))
+                   (y-or-n-p (format "Directory `%s' does not exist! Create it?" parent-directory)))
+          (make-directory parent-directory t))))
 
-  (defun rename-this-buffer-and-file ()
-    "Renames current buffer and file it is visiting."
+    (add-to-list 'find-file-not-found-functions #'my-create-non-existent-directory)
+
+    (defun rename-this-buffer-and-file ()
+      "Renames current buffer and file it is visiting."
+      (interactive)
+      (let ((name (buffer-name))
+            (filename (buffer-file-name)))
+        (if (not (and filename (file-exists-p filename)))
+            (error "Buffer '%s' is not visiting a file!" name)
+          (let ((new-name (read-file-name "New name: " filename)))
+            (cond ((get-buffer new-name)
+                   (error "A buffer named '%s' already exists!" new-name))
+                  (t
+                   (rename-file filename new-name 1)
+                   (rename-buffer new-name)
+                   (set-visited-file-name new-name)
+                   (set-buffer-modified-p nil)
+                   (message "File '%s' successfully renamed to '%s'" name (file-name-nondirectory new-name))))))))
+
+  (defun my-toggle-theme ()
+    "Toggle between `doom-one` and `doom-one-light` themes."
     (interactive)
-    (let ((name (buffer-name))
-          (filename (buffer-file-name)))
-      (if (not (and filename (file-exists-p filename)))
-          (error "Buffer '%s' is not visiting a file!" name)
-        (let ((new-name (read-file-name "New name: " filename)))
-          (cond ((get-buffer new-name)
-                 (error "A buffer named '%s' already exists!" new-name))
-                (t
-                 (rename-file filename new-name 1)
-                 (rename-buffer new-name)
-                 (set-visited-file-name new-name)
-                 (set-buffer-modified-p nil)
-                 (message "File '%s' successfully renamed to '%s'" name (file-name-nondirectory new-name))))))))
+    (let ((dark 'doom-one)
+          (light 'doom-one-light))
+      (if (member dark custom-enabled-themes)
+          (progn
+            (disable-theme dark)
+            (load-theme light t))
+        (when (member light custom-enabled-themes)
+          (disable-theme light))
+        (load-theme dark t))))
 
 #+end_src
 
@@ -1292,7 +1308,7 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
 
 #+begin_src emacs-lisp
 
-  (message "\n -- setting appeareance --\n")
+  (message "\n -- setting appearance --\n")
 
   ;; No menu nor bar
   (tool-bar-mode 0)
@@ -1319,6 +1335,13 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
   ;; Frame name = edited file name
   (setq frame-title-format '(buffer-file-name "%f"))
 
+  (when (window-system)
+    (set-face-attribute 'default nil :height 80)
+    )
+
+  ;; paragraph are 90 characters long
+  (setq-default fill-column 90)
+
 #+end_src
 
 
@@ -1330,7 +1353,7 @@ Theme synchronize with daylight. Theme is light during daytime and dark otherwis
 
   (install-package 'doom-themes)
 
-  (setq default-theme 'doom-one-light)
+  (setq default-theme 'doom-one)
   (load-theme default-theme t)
 
   (defun synchronize-theme ()
@@ -1346,7 +1369,8 @@ Theme synchronize with daylight. Theme is light during daytime and dark otherwis
         (load-theme next-theme t))))
 
   ;; run every 15min
-  (run-with-timer 0 900 'synchronize-theme)
+  ;; uncomment in winter season when we don't really need the light theme
+  ;; (run-with-timer 0 900 'synchronize-theme)
 
 #+end_src
 
