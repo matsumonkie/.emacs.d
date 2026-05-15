@@ -1021,6 +1021,11 @@ Similar to a zen mode where the main frame can be centered for better reading.
       '((mermaid . t)
         (scheme . t)))
 
+  ;; Open file with specific software (when using `C-c C-o`)
+  (setq org-file-apps
+        '((auto-mode . emacs)
+          ("\\.png\\'" . "xdg-open %s")
+          ("\\.svg\\'" . "xdg-open %s")))
 
 #+end_src
 
