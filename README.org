@@ -24,6 +24,7 @@
   - [[#multiple-cursor][multiple cursor]]
   - [[#magit][magit]]
   - [[#olivetti][Olivetti]]
+  - [[#ob-mermaid][ob-mermaid]]
   - [[#org][org]]
   - [[#projectile][projectile]]
   - [[#perspective][perspective]]
@@ -997,6 +998,14 @@ Similar to a zen mode where the main frame can be centered for better reading.
 
 #+end_src
 
+** ob-mermaid
+
+#+begin_src emacs-lisp
+
+  (install-package 'ob-mermaid)
+  (setq ob-mermaid-cli-path "/home/iori/.npm-global/bin/mmdc")
+
+#+end_src
 
 ** org
 
@@ -1004,6 +1013,14 @@ Similar to a zen mode where the main frame can be centered for better reading.
 
   (install-package 'toc-org)
   (add-hook 'org-mode-hook 'toc-org-mode)
+  (setq org-startup-with-inline-images t) ;; always show images. toggle with: `C-c C-x C-v`
+
+  ;; Add mermaid and other languages to org-babel
+  (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((mermaid . t)
+        (scheme . t)))
+
 
 #+end_src
 
@@ -1337,7 +1354,15 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
 
   (when (window-system)
     (set-face-attribute 'default nil :height 80)
-    )
+  )
+
+  ;; always launch 2 tabs, first one should be magit
+  (add-hook 'emacs-startup-hook
+    (lambda ()
+      (tab-bar-new-tab)
+      (tab-bar-move-tab -1)
+      (magit-status))
+  )
 
   ;; paragraph are 90 characters long
   (setq-default fill-column 90)
