@@ -850,9 +850,26 @@ jump to any word or initial
   (install-package 'bm)
 
   (global-set-key (kbd "M-m") 'bm-toggle)
-  (global-set-key (kbd "M-s") 'bm-next)
-  (global-set-key (kbd "M-r") 'bm-previous)
-  (setq bm-highlight-style 'bm-highlight-only-line) ;;default, the last one in the pic
+  (global-set-key (kbd "M-r") 'bm-next)
+  (global-set-key (kbd "M-s") 'bm-previous)
+
+  (setq bm-highlight-style 'bm-highlight-only-fringe)
+
+  ;; TTY has no fringe: draw the marker in the left margin instead
+  (defun my/bm-margin-marker ()
+    (propertize " " 'display `((margin left-margin)
+                               ,(propertize ">" 'face (bm-get-highlight-face-fringde)))))
+
+  (define-advice bm-get-fringe-marker (:around (orig) tty-margin)
+    (if (display-graphic-p) (funcall orig) (my/bm-margin-marker)))
+
+  ;; reserve the margin column
+  (defun my/bm-reserve-margin ()
+    (unless (display-graphic-p)
+      (setq left-margin-width (max left-margin-width 1))
+      (when (get-buffer-window) (set-window-buffer nil (current-buffer)))))
+  (add-hook 'find-file-hook #'my/bm-reserve-margin)
+
   (setq bm-marker 'bm-marker-right)
 
 #+end_src
