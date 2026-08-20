@@ -852,24 +852,6 @@ jump to any word or initial
   (global-set-key (kbd "M-m") 'bm-toggle)
   (global-set-key (kbd "M-r") 'bm-next)
   (global-set-key (kbd "M-s") 'bm-previous)
-
-  (setq bm-highlight-style 'bm-highlight-only-fringe)
-
-  ;; TTY has no fringe: draw the marker in the left margin instead
-  (defun my/bm-margin-marker ()
-    (propertize " " 'display `((margin left-margin)
-                               ,(propertize ">" 'face (bm-get-highlight-face-fringde)))))
-
-  (define-advice bm-get-fringe-marker (:around (orig) tty-margin)
-    (if (display-graphic-p) (funcall orig) (my/bm-margin-marker)))
-
-  ;; reserve the margin column
-  (defun my/bm-reserve-margin ()
-    (unless (display-graphic-p)
-      (setq left-margin-width (max left-margin-width 1))
-      (when (get-buffer-window) (set-window-buffer nil (current-buffer)))))
-  (add-hook 'find-file-hook #'my/bm-reserve-margin)
-
   (setq bm-marker 'bm-marker-right)
 
 #+end_src
@@ -1429,7 +1411,10 @@ Theme synchronize with daylight. Theme is light during daytime and dark otherwis
    ;; If you edit it by hand, you could mess it up, so be careful.
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
-   '(bm-face ((t (:background "gray88" :foreground "black"))))
+   ;; no background: a selection stays the only grey band, so the two never
+   ;; look alike. :extend draws the rule past end-of-line, orange reads on both
+   ;; the dark and the light theme
+   '(bm-face ((t (:extend t :underline (:color "#da8548" :style line)))))
    '(centaur-tabs-default ((t (:background "#f0f0f0"))))
    '(centaur-tabs-selected ((t (:background "sky blue" :foreground "black"))))
    '(centaur-tabs-selected-modified ((t (:background "sky blue" :foreground "black"))))
