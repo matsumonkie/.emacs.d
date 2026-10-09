@@ -925,6 +925,9 @@ incrementally expand region to word -> string -> paragraph -> ...
 
   (install-package 'markdown-mode)
   (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
+  ;; markdown-next-link shadows global tab forward
+  (with-eval-after-load 'markdown-mode
+    (define-key markdown-mode-map (kbd "M-n") 'centaur-tabs-forward))
 
 #+end_src
 
@@ -942,9 +945,154 @@ Collaborative emacs session editing
 
 ripgrep for emacs
 
+Navigating matches with =n= / =p= shows the match in a second window and
+highlights it. The preview always reuses that window, so the frame never
+gets a third one.
+
+The header line shows the position in the search history (=C-c <= / =C-c >=
+navigate it); =h= lists the whole history and reruns the picked search.
+Unrelated to =L= (=rg-list-searches=), which lists saved result buffers.
+
 #+begin_src emacs-lisp
 
   (install-package 'rg)
+
+  (setq next-error-message-highlight t) ;; mark current match in the result buffer
+
+  (defvar my-rg-preview-split #'split-window-below
+    "How to create the preview window when the result window is alone.")
+
+  (defface my-rg-preview-match '((t :inherit next-error))
+    "Face for the previewed rg match.")
+
+  (defvar my-rg--preview-overlay nil)
+
+  (defun my-rg--preview-clear ()
+    (when (overlayp my-rg--preview-overlay)
+      (delete-overlay my-rg--preview-overlay)))
+
+  (defun my-rg--match-length ()
+    "Length of the rg match on the result line at point, nil if none."
+    (save-excursion
+      (let ((eol (line-end-position))
+            (beg nil))
+        (while (and (null beg) (< (point) eol))
+          (if (eq (get-text-property (point) 'font-lock-face) 'rg-match-face)
+              (setq beg (point))
+            (goto-char (or (next-single-property-change (point) 'font-lock-face nil eol)
+                           eol))))
+        (when beg
+          (- (or (next-single-property-change beg 'font-lock-face nil eol) eol) beg)))))
+
+  (defun my-rg--highlight (window length)
+    "Highlight LENGTH chars at WINDOW's point, or the whole line if LENGTH is nil."
+    (with-current-buffer (window-buffer window)
+      (let* ((beg (window-point window))
+             (end (save-excursion
+                    (goto-char beg)
+                    (if length
+                        (min (+ beg length) (line-end-position))
+                      (line-end-position)))))
+        (setq my-rg--preview-overlay (make-overlay beg end))
+        (overlay-put my-rg--preview-overlay 'face 'my-rg-preview-match)
+        (overlay-put my-rg--preview-overlay 'priority 1000)
+        (unless (pos-visible-in-window-p beg window)
+          (with-selected-window window (recenter))))))
+
+  (defun my-rg-preview-next (n)
+    "Show the Nth next match in the other window, staying in the result window."
+    (interactive "p")
+    (unless (derived-mode-p 'rg-mode)
+      (user-error "Not in an rg result buffer"))
+    (my-rg--preview-clear)
+    (when (one-window-p) (funcall my-rg-preview-split))
+    (let ((rg-window (selected-window)))
+      (let ((display-buffer-alist
+             ;; reuse an existing window: never split a third one
+             '((".*" (display-buffer-reuse-window display-buffer-use-some-window)
+                (inhibit-same-window . t))))
+            (next-error-highlight-no-select nil)) ;; own overlay instead of the flash
+        (next-error-no-select n))
+      (let ((window (get-window-with-predicate (lambda (w) (not (eq w rg-window))))))
+        (when window
+          (my-rg--highlight window (my-rg--match-length))))))
+
+  (defun my-rg-preview-previous (n)
+    "Show the Nth previous match in the other window."
+    (interactive "p")
+    (my-rg-preview-next (- n)))
+
+  (with-eval-after-load 'rg
+    (define-key rg-mode-map "n" #'my-rg-preview-next)
+    (define-key rg-mode-map "p" #'my-rg-preview-previous))
+
+  ;; search history: position in the header line, =h= to pick an entry
+
+  (defun my-rg--history-searches ()
+    "Searches in the current buffer's history, oldest first."
+    (when (rg-history-p rg-search-history)
+      (append (reverse (rg-history-past rg-search-history))
+              (list (rg-history-present rg-search-history))
+              (rg-history-future rg-search-history))))
+
+  (defun my-rg--history-position ()
+    "Position in the search history as \"n/total\"."
+    (if (rg-history-p rg-search-history)
+        (let ((past (length (rg-history-past rg-search-history)))
+              (future (length (rg-history-future rg-search-history))))
+          (format "%d/%d" (1+ past) (+ past future 1)))
+      "-"))
+
+  (defun my-rg--history-label (index search)
+    (format "%2d %s %s%s%s"
+            index
+            (if (rg-search-literal search) "lit" " re")
+            (rg-search-pattern search)
+            (if (rg-search-files search) (format "  [%s]" (rg-search-files search)) "")
+            (if (rg-search-flags search)
+                (format "  %s" (string-join (rg-search-flags search) " "))
+              "")))
+
+  (defun my-rg--history-table (labels)
+    "Completion table over LABELS that keeps them in history order."
+    (lambda (string pred action)
+      (if (eq action 'metadata)
+          '(metadata (display-sort-function . identity)
+                     (cycle-sort-function . identity))
+        (complete-with-action action labels string pred))))
+
+  (defun my-rg-history-goto ()
+    "Pick a search from this buffer's history and rerun it."
+    (interactive)
+    (unless (derived-mode-p 'rg-mode)
+      (user-error "Not in an rg result buffer"))
+    (let* ((searches (my-rg--history-searches))
+           (labels (seq-map-indexed (lambda (s i) (my-rg--history-label (1+ i) s)) searches))
+           (current (nth (length (rg-history-past rg-search-history)) labels))
+           (choice (completing-read "rg history: " (my-rg--history-table labels)
+                                    nil t nil nil current))
+           (index (seq-position labels choice)))
+      (unless index (user-error "No such history entry"))
+      ;; keep back/forward navigation consistent with the picked entry
+      (setf (rg-history-past rg-search-history) (reverse (seq-take searches index))
+            (rg-history-present rg-search-history) (nth index searches)
+            (rg-history-future rg-search-history) (nthcdr (1+ index) searches))
+      (setq rg-cur-search (rg-search-copy (nth index searches)))
+      (rg-rerun 'no-history)))
+
+  (defun my-rg--header-add-history (&rest _)
+    "Append the history position to the rg header line."
+    (setq header-line-format
+          (append header-line-format
+                  (list "  "
+                        (rg-header-mouse-action
+                         'my-rg-history-goto "Show search history"
+                         (rg-header-render-label "hist")
+                         '(:eval (my-rg--history-position)))))))
+
+  (with-eval-after-load 'rg
+    (advice-add 'rg-create-header-line :after #'my-rg--header-add-history)
+    (define-key rg-mode-map "h" #'my-rg-history-goto))
 
 #+end_src
 
@@ -1144,8 +1292,8 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
 
   (install-package 'git-link)
 
-  (defalias 'gl 'git-link)
-  (defalias 'glc 'git-link-commit)
+  (defalias 'github 'git-link)
+  (setq git-link-open-in-browser t)
 
 #+end_src
 
