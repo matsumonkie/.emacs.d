@@ -1131,6 +1131,14 @@ Unrelated to =L= (=rg-list-searches=), which lists saved result buffers.
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
   (setq magit-save-repository-buffers nil)
 
+  (defun my-magit-toggle ()
+    "Open magit status, or bury it if already in a magit buffer."
+    (interactive)
+    (if (derived-mode-p 'magit-mode)
+        ;; restores the window config saved by the fullframe display
+        (magit-mode-bury-buffer)
+      (magit-status)))
+  (global-set-key (kbd "C-a") 'my-magit-toggle)
 
 #+end_src
 
@@ -1227,6 +1235,29 @@ Vertical completion UI
 
   (global-set-key (kbd "M-T") 'tab-previous)
   (global-set-key (kbd "M-N") 'tab-next)
+
+  ;; Per-tab buffers: tab-bar saves the frame buffer-list per tab, centaur-tabs shows only those.
+  ;; New tab inherits the old list: reset it. post-open hook is too early, clobbers the old tab.
+  (advice-add 'tab-bar-new-tab-to :after
+              (lambda (&rest _)
+                (set-frame-parameter nil 'buffer-list (list (current-buffer)))))
+
+  (defun my/centaur-tabs-tab-buffer-list ()
+    "Buffers of the current tab-bar tab."
+    (let ((tab-buffers (frame-parameter nil 'buffer-list)))
+      (seq-filter (lambda (b)
+                    (or (eq b (current-buffer))
+                        (and (memq b tab-buffers)
+                             (or (buffer-file-name b)
+                                 (not (string-prefix-p " " (buffer-name b)))))))
+                  (buffer-list))))
+
+  (setq centaur-tabs-buffer-list-function #'my/centaur-tabs-tab-buffer-list)
+
+  ;; Same buffer visible in both tabs fires no window-buffer change: refresh explicitly.
+  (add-hook 'tab-bar-tab-post-select-functions
+            (lambda (&rest _)
+              (when centaur-tabs-mode (centaur-tabs-buffer-update-groups))))
 
 #+end_src
 
@@ -1508,12 +1539,11 @@ In minibuffers, use M-p (previous-history-elements) and M-n (next-history-elemen
     (set-face-attribute 'default nil :height 80)
   )
 
-  ;; always launch 2 tabs, first one should be magit
+  ;; always launch 2 tabs
   (add-hook 'emacs-startup-hook
     (lambda ()
       (tab-bar-new-tab)
-      (tab-bar-move-tab -1)
-      (magit-status))
+      (tab-bar-move-tab -1))
   )
 
   ;; paragraph are 90 characters long
